@@ -2,11 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="css/index.css" rel="stylesheet" type="text/css" />
+    <meta name="viewport" content="width=device-width">
+    <title>PacMan</title>
+    <link href="/assets/css/index.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
+    <div class="canvas-container">
+        <canvas id="pacmanCanvas" width="564" height="624"></canvas>
+    </div>
+    
+    <script src="/assets/src/constants.js"></script>
+    <script src="/assets/src/arrays_positions/direction_change_position.js"></script>
+    <script src="/assets/src/arrays_positions/fruits_positions.js"></script>
+    <script src="/assets/src/arrays_positions/ghost_position.js"></script>
+    <script src="/assets/src/arrays_positions/pellet_position.js"></script>
+    <script src="/assets/src/arrays_positions/powerPellet_position.js"></script>
+    <script src="/assets/src/arrays_positions/wall_position.js"></script>
     <script src="/assets/src/wall.js"></script>
     <script src="/assets/src/fruit.js"></script>
     <script src="/assets/src/pellet.js"></script>

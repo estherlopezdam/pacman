@@ -1,5 +1,21 @@
 canvas {
-    border: 1px dotted;
-    margin: 0 auto;
-    display: block;
-  }
+    border: 5px solid red;
+    background-color: #3b4d61;
+}
+  /* Asegurarse de que el cuerpo y html ocupen el 100% de la pantalla */
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center; /* Centrar horizontalmente */
+  align-items: center; /* Centrar verticalmente */
+}
+
+/* Centrar el canvas dentro de su contenedor */
+.canvas-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Puedes añadir márgenes o padding si necesitas ajustar el espacio */
+}
+
