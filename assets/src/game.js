@@ -38,11 +38,23 @@ class Game {
         this.pellets = Pellet.createPellets(this.ctx, pellet_positions);
         this.powerPellets = PowerPellet.createPellets(this.ctx, powerPellets_positions);
     }
+
+    initGhost() {
+        const blinky = new Blinky(this.ctx);
+        const pinky = new Pinky(this.ctx);
+        const inky = new Inky(this.ctx);
+        const clyde = new Clyde(this.ctx);
+        this.ghosts.push(blinky);
+        this.ghosts.push(pinky);
+        this.ghosts.push(inky);
+        this.ghosts.push(clyde);
+    }
     
 
-    start() {       
-       
+    start() {    
 
+       
+        this.initGhost();
         this.initWalls(wall_position);
         this.initPellets(pellet_positions, powerPellets_positions);
         
@@ -70,6 +82,8 @@ class Game {
         this.powerPellets.forEach(powerPellet => powerPellet.draw());
 
         this.pacman.draw();
+        
+        this.ghosts.forEach(ghost => ghost.draw());
     }
 
 
