@@ -5,6 +5,8 @@ class Wall {
         this.y = y;
         this.width = this.ctx.canvas.width / 28;
         this.height = this.ctx.canvas.height / 31;
+        this.size = 20;
+        this.objectType = 'wall';
     }
 
     draw() {
@@ -18,7 +20,7 @@ class Wall {
     
         for (let i = 0; i < wall_positions.length; i++) {
             const wall = wall_positions[i];
-            const newWall = new Wall(ctx, wall[0] * size, wall[1] * size, size, size);  // Multiplicamos por el tamaño
+            const newWall = new Wall(ctx, wall[0] * size, wall[1] * size);   // Multiplicamos por el tamaño
             walls.push(newWall);
         }
     

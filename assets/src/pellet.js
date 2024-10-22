@@ -5,6 +5,7 @@ class Pellet {
       this.y = y;
       this.radius = radius;  // El radio define el tamaño del pellet
       this.color = '#FFD700';  // Color dorado para los pellets
+      this.objectType = 'pellet';
     }
   
     draw() {
@@ -24,7 +25,7 @@ class Pellet {
         const position = pellet_positions[i];
         const x = position[0] * size + size / 2;  // Ajustar la posición para centrar el pellet
         const y = position[1] * size + size / 2;
-        const newPellet = new this(ctx, x, y);
+        const newPellet = new Pellet(ctx, x, y);
         pellets.push(newPellet);
       }
   

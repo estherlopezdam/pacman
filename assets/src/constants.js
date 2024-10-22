@@ -12,6 +12,6 @@ const n_positions = [
 
 //coordenadas de las dos posiciones donde puede crearse pacman
 
-const o_positions = [
-    [13, 24], [14, 24]
+const p_positions = [
+    [13, 23],
 ];

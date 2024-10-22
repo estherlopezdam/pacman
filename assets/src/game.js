@@ -5,7 +5,18 @@ class Game {
         this.level = 1;
         this.tick = 0;
 
-        this.pacman = new Pacman(this.ctx);
+        
+        const spriteSheet = new Image();
+        spriteSheet.src = "/assets/img/spriteSheet.png";
+
+        // Definir el número de frames en horizontal y vertical
+        const horizontalFrames = 11;  
+        const verticalFrames = 7; 
+        this.pacman = new Pacman(this.ctx);    
+
+        // Inicializar el SpriteManager con la hoja de sprites y el número de frames
+        this.spriteManager = new SpriteManager(spriteSheet, horizontalFrames, verticalFrames);
+        
         //this.bg = new Background(this.ctx);
 
         // Inicialización de los arrays de objetos del mapa
@@ -17,8 +28,7 @@ class Game {
 
     }
 
-    // Método para crear las paredes en el mapa
-      // Método para inicializar las paredes llamando al método estático de Wall
+   
     initWalls(wall_position) {
         this.walls = Wall.createWalls(this.ctx, wall_position);
         
@@ -26,28 +36,30 @@ class Game {
 
     initPellets(pellet_positions, powerPellets_positions) {
         this.pellets = Pellet.createPellets(this.ctx, pellet_positions);
-        this.powerPellets = powerPellet.createPellets(this.ctx, powerPellets_positions);
+        this.powerPellets = PowerPellet.createPellets(this.ctx, powerPellets_positions);
     }
     
 
-    start() {
+    start() {       
+       
 
         this.initWalls(wall_position);
         this.initPellets(pellet_positions, powerPellets_positions);
-        // this.pellets = this.createPellets();  // Llenar el mapa con pellets
-        // this.powerPellets = this.createPowerPellets();  // Llenar el mapa con Power Pellets
-        // this.walls = this.createWalls();  // Inicializar las paredes
-        // this.ghosts = this.createGhosts();  // Inicializar fantasmas    
+        
+       
         this.intervalID = setInterval(() => {
             this.clear();
 
             this.draw();
-           // this.move();
+            this.move();
 
             this.tick++;
 
-           // this.checkCollisions();
 
+            this.checkCollisions(this.pacman, this.walls, this.powerPellets,this.pellets);
+            
+                
+ 
         }, 1000 / 60);
     }
 
@@ -62,6 +74,7 @@ class Game {
 
 
     move() {
+        this.pacman.move();
 
     }
 
@@ -69,112 +82,94 @@ class Game {
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
     }
 
+    onKeyDown(e) {
+        this.pacman.onKeyDown(e);
+    }
+
+    checkCollisions(pacman, walls, powerpellets, pellets) {
+
+        if(pacman.x + pacman.size < 0) pacman.x = this.ctx.canvas.width;
+        if(pacman.x - pacman.size > this.ctx.canvas.width) pacman.x = 0;
+        this.checkCollision(pacman,walls);
+        this.checkCollision(pacman,powerpellets);
+        this.checkCollision(pacman,pellets);
+    }
+
     checkCollision(pacman, objectsArray) {
         for (let i = 0; i < objectsArray.length; i++) {
             const object = objectsArray[i];
-
-                    // Detectar colisión
-            if (detectCollision(pacman, object)) {
-                return object; // Si hay colisión, devuelve el objeto con el que colisionó
+    
+            // Detectar colisión con paredes (Pac-Man cuadrado vs pared cuadrada)
+            if (object.objectType === 'wall') {
+                if (object.y + object.size > pacman.y // El borde inferior del objeto está por debajo del borde superior de Pac-Man
+                    && object.y < (pacman.y + pacman.size) // El borde superior del objeto está por encima del borde inferior de Pac-Man
+                    && object.x + object.size > pacman.x // El borde derecho del objeto está a la derecha del borde izquierdo de Pac-Man
+                    && pacman.x + pacman.size > object.x) { // El borde izquierdo de Pac-Man está a la izquierda del borde derecho del objeto
+                    this.vy = 0;
+                    this.vx = 0;
+                    this.handleCollisionWithWall(pacman, object);
+                }
+            }
+            // Colisión entre Pac-Man (cuadrado) y pellets/power pellets (círculos)
+            else if (object.objectType === 'pellet' || object.objectType === 'powerpellet') {
+                const distX = Math.abs(object.x - (pacman.x + pacman.size / 2)); // Distancia en X desde el centro del pellet al centro de Pac-Man
+                const distY = Math.abs(object.y - (pacman.y + pacman.size / 2)); // Distancia en Y desde el centro del pellet al centro de Pac-Man
+    
+                // Si la distancia es mayor que la mitad del cuadrado más el radio, no hay colisión
+                if (distX > (pacman.size / 2 + object.radius) || distY > (pacman.size / 2 + object.radius)) {
+                    continue;
+                }
+    
+                // Si la distancia en X o Y es menor que la mitad del cuadrado, hay colisión
+                if (distX <= (pacman.size / 2) || distY <= (pacman.size / 2)) {
+                    if (object.objectType === 'pellet') {
+                        this.pellets = this.pellets.filter(p => !(p.x === object.x && p.y === object.y));
+                    } else if (object.objectType === 'powerpellet') {
+                        this.powerPellets = this.powerPellets.filter(p => !(p.x === object.x && p.y === object.y));
+                    }
+                }
+    
+                // Comprobación final si hay colisión en las esquinas del cuadrado
+                const dx = distX - pacman.size / 2;
+                const dy = distY - pacman.size / 2;
+                if ((dx * dx + dy * dy) <= (object.radius * object.radius)) {
+                    if (object.objectType === 'pellet') {
+                        console.log("como");
+                        this.pellets = this.pellets.filter(p => !(p.x === object.x && p.y === object.y));
+                    } else if (object.objectType === 'powerpellet') {
+                        this.powerPellets = this.powerPellets.filter(p => !(p.x === object.x && p.y === object.y));
+                    }
+                }
             }
         }
-    return null;
-
     }
 
-    detectCollision(pacman, object) {
+
+        handleCollisionWithWall(pacman, wall) {
+            // Ajustar la posición de Pac-Man basado en la dirección actual
+            switch (pacman.currentDirection) {
+                case UP:
+                    // Pac-Man se mueve hacia arriba, ajústalo hacia abajo
+                    pacman.y = wall.y + wall.height;
+                    break;
         
-        const distX = pacman.x - object.x;
-        const distY = pacman.y - object.y;
-        const distance = Math.sqrt(distX * distY + distY * distY);
-      
-        // Si la distancia es menor que la suma de los radios, hay colisión (ajustar si es cuadrado/rectángulo) es decir si es true hay colision si es false no la hay
-        return distance < (pacman.radius + object.radius); // Para objetos circulares
-    }
-
-    checkCollisions() {
-        // Colisión con fantasmas
-            const ghostCollision = this.checkCollision(this.pacman, this.ghosts);
-            if (ghostCollision) {
-            console.log("Pac-Man ha colisionado con un fantasma.");
-            this.handleGhostCollision(ghostCollision);
-            }
+                case DOWN:
+                    // Pac-Man se mueve hacia abajo, ajústalo hacia arriba
+                    pacman.y = wall.y - pacman.size;
+                    break;
         
-            // Colisión con pellets
-            const pelletCollision = this.checkCollision(this.pacman, this.pellets);
-            if (pelletCollision) {
-            console.log("Pac-Man ha comido un pellet.");
-            this.handlePelletCollision(pelletCollision);
-            }
+                case LEFT:
+                    // Pac-Man se mueve hacia la izquierda, ajústalo hacia la derecha
+                    pacman.x = wall.x + wall.width;
+                    break;
         
-            // Colisión con frutas
-            const fruitCollision = this.checkCollision(this.pacman, this.fruits);
-            if (fruitCollision) {
-            console.log("Pac-Man ha comido una fruta.");
-            this.handleFruitCollision(fruitCollision);
-            }
+                case RIGHT:
+                    // Pac-Man se mueve hacia la derecha, ajústalo hacia la izquierda
+                    pacman.x = wall.x - pacman.size;
+                    break;
         
-            // Colisión con power pellets
-            const powerPelletCollision = this.checkCollision(this.pacman, this.powerPellets);
-            if (powerPelletCollision) {
-            console.log("Pac-Man ha comido un Power Pellet.");
-            this.handlePowerPelletCollision(powerPelletCollision);
+                default:
+                    break;
             }
-
-            //colision con los muros
-            const wallCollisions = this.checkCollision(this.pacman, this.walls);
-            if (wallCollisions) {
-            console.log("Pac-Man ha chocado con un muro");
-            this.handlePowerWallCollision(wallCollisions);
-            }
-        }
-            
-            
-     
-
-        // Método genérico que verifica colisiones con una lista de objetos
-    checkCollision(pacman, objectsArray) {
-        for (let i = 0; i < objectsArray.length; i++) {
-        const object = objectsArray[i];
-        // Si se detecta colisión, devuelve el objeto colisionado
-        if (this.detectCollision(pacman, object)) {
-            return object;
-        }
-        }
-        return null;  // Si no hay colisión, devuelve null
-    }
-
-    // Método de detección de colisión (puedes adaptarlo según tu lógica)
-    detectCollision(pacman, object) {
-        const distX = pacman.x - object.x;
-        const distY = pacman.y - object.y;
-        const distance = Math.sqrt(distX * distX + distY * distY);
-        return distance < (pacman.radius + object.radius);  // Si hay colisión, devuelve true
-    }
-
-    handleGhostCollision(ghost) {
-        console.log('Manejando colisión con un fantasma.');
-        // Aquí podrías manejar la pérdida de una vida o el estado de invencibilidad
-        }
-    
-    handlePelletCollision(pellet) {
-        console.log('Manejando colisión con un pellet.');
-        // Elimina el pellet colisionado del array de pellets
-        this.pellets = this.pellets.filter(p => p !== pellet);  // Solo mantiene los pellets que no han colisionado
-    }
-    
-    handleFruitCollision(fruit) {
-        console.log('Manejando colisión con una fruta.');
-        // Elimina la fruta colisionada del array de frutas
-        this.fruits = this.fruits.filter(f => f !== fruit);  // Solo mantiene las frutas que no han colisionado
-    }
-    
-    handlePowerPelletCollision(powerPellet) {
-        console.log('Manejando colisión con un Power Pellet.');
-        // Elimina el power pellet colisionado del array de power pellets
-        this.powerPellets = this.powerPellets.filter(pp => pp !== powerPellet);  // Solo mantiene los power pellets que no han colisionado
-    }
-    
-
-    
+        }    
 }
