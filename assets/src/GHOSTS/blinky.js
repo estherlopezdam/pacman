@@ -5,6 +5,8 @@ class Blinky extends Ghost {
     }
 
     draw() {
+
+       
         super.draw();
     }
 }

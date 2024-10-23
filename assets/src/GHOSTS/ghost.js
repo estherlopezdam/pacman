@@ -5,6 +5,7 @@ class Ghost {
         this.color = color;
         this.position = startPosition;  // Ejemplo: { x: 0, y: 0 }
         this.releaseTime = releaseTime;
+        this.objectType = 'ghost';
         this.size = 20;
         this.tick = 0;  
 
@@ -14,8 +15,8 @@ class Ghost {
         
           
         // Inicializar posición y velocidad
-        this.x = this.position[0];  // Posición inicial en el eje X
-        this.y = this.position[1];  // Posición inicial en el eje Y
+        this.x = this.position[0] * this.size;  // Posición inicial en el eje X
+        this.y = this.position[1] * this.size;  // Posición inicial en el eje Y
         this.vx = 0;  // Velocidad en el eje X
         this.vy = 0;  // Velocidad en el eje Y
 }
@@ -29,11 +30,8 @@ updatePosition() {
 
 // Método para dibujar el fantasma
 draw() {
-    
-    console.log('Dibujando', this.name, 'con color', this.color);
-  
     this.ctx.fillStyle = this.color;
-    this.ctx.fillRect(this.x * this.size, this.y * this.size, this.size, this.size);  // Dibuja un cuadrado
+    this.ctx.fillRect(this.x , this.y, this.size, this.size);  // Dibuja un cuadrado
     
 }
 

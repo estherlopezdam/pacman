@@ -3,8 +3,8 @@ class Pacman {
 
   constructor(ctx, size = 10) {
     this.ctx = ctx;
-    this.x = p_positions[0][0] * 20 + 20 / 2;
-    this.y = p_positions[0][1] * 20 + 20 / 2;
+    this.x = Math.round(p_positions[0][0] * 20 + 20 / 2);
+    this.y =Math.round(p_positions[0][1] * 20 + 20 / 2);
     this.vx = -1;
     this.vy = 0;
     this.size = size;  // Tamaño del cuadrado
