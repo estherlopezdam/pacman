@@ -3,8 +3,8 @@ class Wall {
         this.ctx = ctx;
         this.x = x;
         this.y = y;
-        this.width = this.ctx.canvas.width / 28;
-        this.height = this.ctx.canvas.height / 31;
+        this.width =20;
+        this.height = 20;
         this.size = 20;
         this.objectType = 'wall';
     }

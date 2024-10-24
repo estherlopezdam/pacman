@@ -92,7 +92,7 @@ class Game {
 
     move() {
         this.pacman.move();
-        this.ghosts.forEach(ghost => ghost.move());
+        this.ghosts.forEach(ghost => ghost.move(this.pacman));
 
     }
 
@@ -187,6 +187,8 @@ class Game {
             if (ghostIndex !== -1) {
                 this.ghosts[ghostIndex].vy = 0;
                 this.ghosts[ghostIndex].vx = 0;
+
+                
                
             }
 

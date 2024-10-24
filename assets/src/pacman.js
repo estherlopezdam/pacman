@@ -73,6 +73,8 @@ onKeyDown(e) {
 
     this.x += this.vx;
     this.y += this.vy;
+    console.log("estoy en x ", this.x);
+    console.log("estoy en y ", this.y)
 
 
 

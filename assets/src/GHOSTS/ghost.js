@@ -3,11 +3,12 @@ class Ghost {
         this.ctx = ctx
         this.name = name;
         this.color = color;
-        this.position = startPosition;  // Ejemplo: { x: 0, y: 0 }
+        this.position = startPosition; // [x, y]
         this.releaseTime = releaseTime;
         this.objectType = 'ghost';
         this.size = 20;
         this.tick = 0;  
+        this.currentDirection = 'up';
 
         //this.level = level;  // Nivel del fantasma
        // this.factorAceleration = factorAceleration;  // Factor de aceleración para ajustar la velocidad
@@ -35,11 +36,8 @@ draw() {
     
 }
 
-move() {
-    this.tick++;
-    if(this.tick === this.releaseTime){
-        
-    }
+move(pacman) {
+   
     
 }
 
