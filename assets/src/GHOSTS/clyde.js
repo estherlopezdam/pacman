@@ -35,100 +35,88 @@ class Clyde extends Ghost {
         
        
     
-        // for(let i = 0; i < direction_change_positions.length; i++) {
+        for(let i = 0; i < direction_change_positions.length; i++) {
            
-        //     const puntoClave =  direction_change_positions[i];
-        //     const puntoClaveX = puntoClave[0] * 20;
-        //     const puntoClaveY = (puntoClave[1] * 20) - 1;
+            const puntoClave =  direction_change_positions[i];
+            const puntoClaveX = puntoClave[0] * 20;
+            const puntoClaveY = (puntoClave[1] * 20);
             
-        //     const distanceToChangePoint = Math.sqrt(
-        //     Math.pow(this.x - puntoClaveX, 2) + Math.pow(this.y - puntoClaveY, 2)
-        // );
+            const distanceToChangePoint = Math.sqrt(
+            Math.pow(this.x - puntoClaveX, 2) + Math.pow(this.y - puntoClaveY, 2)
+        );
 
-        //         if (distanceToChangePoint <= this.minDistance && 
-        //             (this.lastChangeX !== puntoClaveX || this.lastChangeY !== puntoClaveY)) {
+                if (distanceToChangePoint <= this.minDistance && 
+                    (this.lastChangeX !== puntoClaveX || this.lastChangeY !== puntoClaveY)) {
                     
-        //             this.canChangeDirection = true;
-        //             console.log(this.canChangeDirection);
-        //         }
+                    this.canChangeDirection = true;
+                    console.log(this.canChangeDirection);
+                }
             
 
             
-        //         if(this.x === puntoClaveX && this.y === puntoClaveY && this.canChangeDirection) {
-        //             console.log("ahora puedo girar");
+                if(this.x === puntoClaveX && this.y === puntoClaveY && this.canChangeDirection) {
+
+                    if ((puntoClaveX === 13 * 20 && puntoClaveY === 11 * 20) || (puntoClaveX === 13 * 20 && puntoClaveY === 11 * 20) ) {
+                        this.canChangeDirection = false;
+                        if(pacman.x > puntoClaveX) {
+                            this.vx = 1;
+                            this.vy = 0;
+                            this.currentDirection = RIGHT;
+                            break;
+                        } else {
+                            this.vx = - 1;
+                            this.vy = 0;
+                            this.currentDirection = LEFT;
+                            break;
+                        }
+                    }
                     
-        //             this.lastChangeX = puntoClaveX;
-        //             this.lastChangeY = puntoClaveY;
+                    this.lastChangeX = puntoClaveX;
+                    this.lastChangeY = puntoClaveY;
                     
-        //             this.changeDirection(pacman);
-        //             this.canChangeDirection = false;
-        //             console.log(this.currentDirection);
-        //             console.log(this.canChangeDirection);
-        //         }
-        // }
+                    this.changeDirection(pacman);
+                    this.canChangeDirection = false;
+                    console.log(this.currentDirection);
+                    console.log(this.canChangeDirection);
+                }
+        }
     }
-    
 
     changeDirection(pacman) {
-        switch (this.currentDirection) {
-            case 'up':
-                if(this.x > pacman.x) {
-                    this.vx = -1;
-                    this.vy = 0;
-    
-                    this.currentDirection = 'left';
-                }
-                else if(this.x < pacman.x){
-                    this.vx = 1;
-                    this.vy = 0;
-                    this.currentDirection = 'right';
-                }
+        // Calcular las distancias en los ejes X e Y entre Pac-Man y el fantasma
+        const distanceX = Math.abs(pacman.x - this.x);
+        const distanceY = Math.abs(pacman.y - this.y);
 
-                break;
-            
-            case 'down':
-                if(this.x > pacman.x) {
-                    this.vx = -1;
-                    this.vy = 0;
-                    this.currentDirection = 'left';
-                }
-                else {
-                    this.vx = 1;
-                    this.vy = 0;
-                    this.currentDirection = 'right';
-                }
-                break;
-
-            case 'left':
-                if(this.y > pacman.y) {
-                    this.vy = -1;
-                    this.vx = 0;
-                    this.currentDirection = 'up';
-                }
-                else {
-                    this.vy = 1;
-                    this.vx = 0;
-                    this.currentDirection = 'down';
-                }
-                break;
-
-            case 'right':
-                if(this.y >  pacman.y) {
-                    this.vy = -1;
-                    this.vx = 0;
-                    this.currentDirection = 'up';
-                }
-                else {
-                    this.vy = 1;
-                    this.vx = 0;
-                    this.currentDirection = 'down';
-                }
-                break;
-    
-                default:
-                    break;
+        // Evaluar la distancia menor para decidir la dirección a seguir
+        if (distanceX > distanceY) {
+            // Si la distancia en X es mayor, elegir moverse en el eje X
+            if (pacman.x > this.x) {
+                // Pac-Man está a la derecha
+                this.vx = 1;
+                this.vy = 0;
+                this.currentDirection = RIGHT;
+            } else {
+                // Pac-Man está a la izquierda
+                this.vx = -1;
+                this.vy = 0;
+                this.currentDirection = LEFT;
             }
+        } else {
+            // Si la distancia en Y es mayor o igual, elegir moverse en el eje Y
+            if (pacman.y > this.y) {
+                // Pac-Man está abajo
+                this.vx = 0;
+                this.vy = 1;
+                this.currentDirection = DOWN;
+            } else {
+                // Pac-Man está arriba
+                this.vx = 0;
+                this.vy = -1;
+                this.currentDirection = UP;
+            }
+        }
     }
+
     onKeyDown(e) {
         super.onKeyDown(e);
     }

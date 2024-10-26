@@ -6,7 +6,7 @@ class Ghost {
         this.position = startPosition; // [x, y]
         this.releaseTime = releaseTime;
         this.objectType = 'ghost';
-        this.size = 15;
+        this.size = 20;
         this.tick = 0;  
         this.currentDirection = UP;
         this.canChangeDirection = false;
@@ -37,7 +37,7 @@ updatePosition() {
 // Método para dibujar el fantasma
 draw() {
     this.ctx.fillStyle = this.color;
-    this.ctx.fillRect(this.x , this.y, 15, 15);  // Dibuja un cuadrado
+    this.ctx.fillRect(this.x , this.y, 20, 20);  // Dibuja un cuadrado
     
 }
 
