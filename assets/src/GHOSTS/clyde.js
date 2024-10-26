@@ -15,10 +15,8 @@ class Clyde extends Ghost {
     move(pacman) {
         
         this.x += this.vx;
-        this.y += this.vy;
-       
+        this.y += this.vy;     
 
-    
         // Esperar hasta que se cumpla el releaseTime
         if (this.tick < this.releaseTime) {
             this.tick++;
@@ -31,7 +29,6 @@ class Clyde extends Ghost {
         }
 
         this.tick++;
-    
         
        
     
