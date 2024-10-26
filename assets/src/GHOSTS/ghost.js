@@ -89,5 +89,10 @@ onKeyDown(e) {
        
         }
     }
+
+    goArround () {
+        
+
+    }
 }
 

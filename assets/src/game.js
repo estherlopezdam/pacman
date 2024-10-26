@@ -59,7 +59,6 @@ class Game {
             this.initWalls(wall_position);
             this.initPellets(pellet_positions, powerPellets_positions);
             this.pacman = new Pacman(this.ctx);
-            console.log("el proximo nivel es",this.level);
         }
 
         
@@ -126,20 +125,16 @@ class Game {
         switch (e.keyCode) {
             case BLINKY:
                 this.currentGhost = 'blinky';
-                console.log('blinky seleccionado');
                 
                 break;
             case PINKY:
                 this.currentGhost = 'pinky';
-                console.log('pinky seleccionado');
                 break;
             case INKY:
                 this.currentGhost = 'inky';
-                console.log('inky seleccionado');
                 break;
             case CLYDE:
                 this.currentGhost = 'clyde';
-                console.log('Clyde seleccionado');
                 break;
 
         
@@ -233,86 +228,82 @@ class Game {
         }
     }
 
-        ghostHandleCollisionWithWall(ghost, wall) {
-            
-            
-                
-
-
-                switch (ghost.currentDirection) {
-                    case UP:
-                        // Pac-Man se mueve hacia arriba, ajústalo hacia abajo
-                        ghost.y = wall.y + wall.height;
-                        break;
-            
-                    case DOWN:
-                        // Pac-Man se mueve hacia abajo, ajústalo hacia arriba
-                        ghost.y = wall.y - ghost.size;
-                        break;
-            
-                    case LEFT:
-                        // Pac-Man se mueve hacia la izquierda, ajústalo hacia la derecha
-                        ghost.x = wall.x + wall.width;
-                        break;
-            
-                    case RIGHT:
-                        // Pac-Man se mueve hacia la derecha, ajústalo hacia la izquierda
-                        ghost.x = wall.x - ghost.size;
-                        break;
-            
-                    default:
-                        break;
-                }
-                
-               
-
-                
-               
-        }
-
+    ghostHandleCollisionWithWall(ghost, wall) {         
         
-
-
-
-        handleCollisionWithWall(pacman, wall) {
-            // Ajustar la posición de Pac-Man basado en la dirección actual
-            switch (pacman.currentDirection) {
+            switch (ghost.currentDirection) {
                 case UP:
                     // Pac-Man se mueve hacia arriba, ajústalo hacia abajo
-                    pacman.y = wall.y + wall.height;
+                    ghost.y = wall.y + wall.height;
                     break;
         
                 case DOWN:
                     // Pac-Man se mueve hacia abajo, ajústalo hacia arriba
-                    pacman.y = wall.y - pacman.size;
+                    ghost.y = wall.y - ghost.size;
                     break;
         
                 case LEFT:
                     // Pac-Man se mueve hacia la izquierda, ajústalo hacia la derecha
-                    pacman.x = wall.x + wall.width;
+                    ghost.x = wall.x + wall.width;
                     break;
         
                 case RIGHT:
                     // Pac-Man se mueve hacia la derecha, ajústalo hacia la izquierda
-                    pacman.x = wall.x - pacman.size;
+                    ghost.x = wall.x - ghost.size;
                     break;
         
                 default:
                     break;
-            }
-        }  
-        
-        handleCollisionWithGhost(pacman) {
-            pacman.x =p_positions[0][0] * 20;            
-            pacman.y =p_positions[0][1] * 20;
-            pacman.vx = -1;
-            pacman.currentDirection = LEFT;
+            }                        
+    }
 
-            const ghostIndex = this.ghosts.findIndex(g => g.name === 'blinky');
-            if (ghostIndex !== -1) {
-                this.ghosts[ghostIndex] = new Inky(this.ctx);
-            }
+    handleCollisionWithWall(pacman, wall) {
+        // Ajustar la posición de Pac-Man basado en la dirección actual
+        switch (pacman.currentDirection) {
+            case UP:
+                // Pac-Man se mueve hacia arriba, ajústalo hacia abajo
+                pacman.y = wall.y + wall.height;
+                break;
+    
+            case DOWN:
+                // Pac-Man se mueve hacia abajo, ajústalo hacia arriba
+                pacman.y = wall.y - pacman.size;
+                break;
+    
+            case LEFT:
+                // Pac-Man se mueve hacia la izquierda, ajústalo hacia la derecha
+                pacman.x = wall.x + wall.width;
+                break;
+    
+            case RIGHT:
+                // Pac-Man se mueve hacia la derecha, ajústalo hacia la izquierda
+                pacman.x = wall.x - pacman.size;
+                break;
+    
+            default:
+                break;
         }
+    }  
+        
+    handleCollisionWithGhost(pacman) {
+        // Reiniciar la posición de Pac-Man
+        this.pacman = new Pacman(this.ctx);
+        
+        // Reiniciar todos los fantasmas
+        this.ghosts = this.ghosts.map(ghost => {
+            switch (ghost.name) {
+                case 'blinky':
+                    return new Blinky(this.ctx);
+                case 'pinky':
+                    return new Pinky(this.ctx);
+                case 'inky':
+                    return new Inky(this.ctx);
+                case 'clyde':
+                    return new Clyde(this.ctx);
+                default:
+                    return ghost;
+            }
+        });
+    }
 
 
 }

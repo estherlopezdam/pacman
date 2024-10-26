@@ -2,7 +2,8 @@ class Blinky extends Ghost {
     constructor() {
         const [name, position, color, releaseTime] = ghost_positions.B;
         super(ctx, name,position, color, releaseTime);
-        this.vx = 1;
+        this.vx = 0;
+        this.vy = -1;
     }
 
     draw() {

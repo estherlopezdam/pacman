@@ -46,7 +46,6 @@ class Clyde extends Ghost {
                     (this.lastChangeX !== puntoClaveX || this.lastChangeY !== puntoClaveY)) {
                     
                     this.canChangeDirection = true;
-                    console.log(this.canChangeDirection);
                 }
             
 
@@ -73,8 +72,6 @@ class Clyde extends Ghost {
                     
                     this.changeDirection(pacman);
                     this.canChangeDirection = false;
-                    console.log(this.currentDirection);
-                    console.log(this.canChangeDirection);
                 }
         }
     }
