@@ -4,8 +4,6 @@ class Clyde extends Ghost {
         super(ctx, name, position, color, releaseTime);
         this.vy = 0;
         this.vx = 0;
-        this.changeDelay = 10;  // Número de ticks que Clyde debe esperar antes de cambiar de dirección
-        this.delayCounter = 0;
 
         
     }
@@ -15,9 +13,11 @@ class Clyde extends Ghost {
     }
 
     move(pacman) {
-
+        
         this.x += this.vx;
         this.y += this.vy;
+       
+
     
         // Esperar hasta que se cumpla el releaseTime
         if (this.tick < this.releaseTime) {
@@ -33,31 +33,39 @@ class Clyde extends Ghost {
         this.tick++;
     
         
-        console.log("estoy en x " , this.x)
-        console.log("estoy en y" , this.y)
+       
     
-        for(let i = 0; i < direction_change_positions.length; i++) {
-            const puntoClave =  direction_change_positions[i];
-            const puntoClaveX = puntoClave[0] * 20;
-            const puntoClaveY = (puntoClave[1] * 20) - 1;
+        // for(let i = 0; i < direction_change_positions.length; i++) {
+           
+        //     const puntoClave =  direction_change_positions[i];
+        //     const puntoClaveX = puntoClave[0] * 20;
+        //     const puntoClaveY = (puntoClave[1] * 20) - 1;
             
+        //     const distanceToChangePoint = Math.sqrt(
+        //     Math.pow(this.x - puntoClaveX, 2) + Math.pow(this.y - puntoClaveY, 2)
+        // );
 
-            if (this.delayCounter < this.changeDelay) {
-                this.delayCounter++;  // Incrementa el contador de retardo
-            } else {
-                if(this.x === puntoClaveX && this.y === puntoClaveY) {
-                    console.log("ahora puedo girar");
-        
-                    console.log(this.currentDirection);
+        //         if (distanceToChangePoint <= this.minDistance && 
+        //             (this.lastChangeX !== puntoClaveX || this.lastChangeY !== puntoClaveY)) {
                     
-                    this.changeDirection(pacman);
-                    console.log(this.currentDirection);// Permitir cambiar de dirección solo si el retardo ha pasado
-                this.delayCounter = 0;  // Reiniciamos el contador después de cambiar de dirección
-            }  
-
-        } 
+        //             this.canChangeDirection = true;
+        //             console.log(this.canChangeDirection);
+        //         }
             
-        }
+
+            
+        //         if(this.x === puntoClaveX && this.y === puntoClaveY && this.canChangeDirection) {
+        //             console.log("ahora puedo girar");
+                    
+        //             this.lastChangeX = puntoClaveX;
+        //             this.lastChangeY = puntoClaveY;
+                    
+        //             this.changeDirection(pacman);
+        //             this.canChangeDirection = false;
+        //             console.log(this.currentDirection);
+        //             console.log(this.canChangeDirection);
+        //         }
+        // }
     }
     
 
@@ -73,13 +81,13 @@ class Clyde extends Ghost {
                 else if(this.x < pacman.x){
                     this.vx = 1;
                     this.vy = 0;
-                    this.currentDirection = 'right'
+                    this.currentDirection = 'right';
                 }
 
                 break;
             
             case 'down':
-                if(this.x > pacman.x + pacman.sice) {
+                if(this.x > pacman.x) {
                     this.vx = -1;
                     this.vy = 0;
                     this.currentDirection = 'left';
@@ -87,39 +95,42 @@ class Clyde extends Ghost {
                 else {
                     this.vx = 1;
                     this.vy = 0;
-                    this.currentDirection = 'right'
+                    this.currentDirection = 'right';
                 }
                 break;
 
             case 'left':
-            if(this.y > pacman.y) {
-                this.vy = -1;
-                this.vx = 0;
-                this.currentDirection = 'up';
-            }
-            else {
-                this.vy = 1;
-                this.vx = 0;
-                this.currentDirection = 'down'
-            }
-            break;
+                if(this.y > pacman.y) {
+                    this.vy = -1;
+                    this.vx = 0;
+                    this.currentDirection = 'up';
+                }
+                else {
+                    this.vy = 1;
+                    this.vx = 0;
+                    this.currentDirection = 'down';
+                }
+                break;
 
             case 'right':
-            if(this.y >  pacman.y) {
-                this.vy = -1;
-                this.vx = 0;
-                this.currentDirection = 'up';
-            }
-            else {
-                this.vy = 1;
-                this.vx = 0;
-                this.currentDirection = 'down'
-            }
-            break;
-    
-            default:
+                if(this.y >  pacman.y) {
+                    this.vy = -1;
+                    this.vx = 0;
+                    this.currentDirection = 'up';
+                }
+                else {
+                    this.vy = 1;
+                    this.vx = 0;
+                    this.currentDirection = 'down';
+                }
                 break;
-        }
+    
+                default:
+                    break;
+            }
+    }
+    onKeyDown(e) {
+        super.onKeyDown(e);
     }
 }
   

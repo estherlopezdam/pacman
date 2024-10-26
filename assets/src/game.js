@@ -4,6 +4,7 @@ class Game {
         this.intervalID = null;
         this.level = 1;
         this.tick = 0;
+        this.currentGhost = null;
 
         
         const spriteSheet = new Image();
@@ -42,12 +43,25 @@ class Game {
     initGhost() {
         const blinky = new Blinky(this.ctx);
         const pinky = new Pinky(this.ctx);
-       // const inky = new Inky(this.ctx);
+        const inky = new Inky(this.ctx);
         const clyde = new Clyde(this.ctx);
         this.ghosts.push(blinky);
         this.ghosts.push(pinky);
-       // this.ghosts.push(inky);
+        this.ghosts.push(inky);
         this.ghosts.push(clyde);
+        
+    }
+
+    nextLevel() {
+        if (this.powerPellets.length === 0 && this.pellets.length === 0) {
+            this.level++;
+            this.initGhost();
+            this.initWalls(wall_position);
+            this.initPellets(pellet_positions, powerPellets_positions);
+            this.pacman = new Pacman(this.ctx);
+            console.log("el proximo nivel es",this.level);
+        }
+
         
     }
     
@@ -71,6 +85,7 @@ class Game {
 
 
             this.checkCollisions(this.pacman, this.walls, this.powerPellets,this.pellets, this.ghosts);
+            this.nextLevel();
 
             
                 
@@ -102,6 +117,38 @@ class Game {
 
     onKeyDown(e) {
         this.pacman.onKeyDown(e);
+        this.ghosts.forEach(ghost => {
+            if(this.currentGhost === ghost.name) ghost.onKeyDown(e);
+        })
+
+
+       
+        switch (e.keyCode) {
+            case BLINKY:
+                this.currentGhost = 'blinky';
+                console.log('blinky seleccionado');
+                
+                break;
+            case PINKY:
+                this.currentGhost = 'pinky';
+                console.log('pinky seleccionado');
+                break;
+            case INKY:
+                this.currentGhost = 'inky';
+                console.log('inky seleccionado');
+                break;
+            case CLYDE:
+                this.currentGhost = 'clyde';
+                console.log('Clyde seleccionado');
+                break;
+
+        
+            default:
+               
+                break;
+        }
+       
+        
     }
 
     checkCollisions(pacman, walls, powerpellets, pellets, ghosts) {
@@ -121,7 +168,11 @@ class Game {
                 if (wall.y + wall.size > ghost.y // El borde inferior del objeto está por debajo del borde superior de Pac-Man
                     && wall.y < ghost.y + ghost.size // El borde superior del objeto está por encima del borde inferior de Pac-Man
                     && wall.x + wall.size > ghost.x // El borde derecho del objeto está a la derecha del borde izquierdo de Pac-Man
-                    && ghost.x + ghost.size > wall.x) this.ghostHandleCollisionWithWall(ghost, wall);
+                    && ghost.x + ghost.size > wall.x) {
+                        ghost.vy = 0;
+                        ghost.vx = 0;
+                        this.ghostHandleCollisionWithWall(ghost, wall);
+                    }
 
             
 
@@ -132,8 +183,8 @@ class Game {
 
     checkCollision(pacman, objectsArray) {
 
-        const pacmanX = Math.round(pacman.x);
-        const pacmanY = Math.round(pacman.y);
+        const pacmanX = pacman.x;
+        const pacmanY = pacman.y;
         for (let i = 0; i < objectsArray.length; i++) {
             const object = objectsArray[i];
     
@@ -146,7 +197,7 @@ class Game {
                     this.vy = 0;
                     this.vx = 0;
                     if (object.objectType === 'wall') this.handleCollisionWithWall(pacman, object);
-                    else this.handleCollisionWithGhost(pacman, object);
+                    else this.handleCollisionWithGhost(pacman);
                 }
             }
             // Colisión entre Pac-Man (cuadrado) y pellets/power pellets (círculos)
@@ -183,16 +234,43 @@ class Game {
     }
 
         ghostHandleCollisionWithWall(ghost, wall) {
-            const ghostIndex = this.ghosts.findIndex(g => g === ghost);
-            if (ghostIndex !== -1) {
-                this.ghosts[ghostIndex].vy = 0;
-                this.ghosts[ghostIndex].vx = 0;
+            
+            
+                
+
+
+                switch (ghost.currentDirection) {
+                    case UP:
+                        // Pac-Man se mueve hacia arriba, ajústalo hacia abajo
+                        ghost.y = wall.y + wall.height;
+                        break;
+            
+                    case DOWN:
+                        // Pac-Man se mueve hacia abajo, ajústalo hacia arriba
+                        ghost.y = wall.y - ghost.size;
+                        break;
+            
+                    case LEFT:
+                        // Pac-Man se mueve hacia la izquierda, ajústalo hacia la derecha
+                        ghost.x = wall.x + wall.width;
+                        break;
+            
+                    case RIGHT:
+                        // Pac-Man se mueve hacia la derecha, ajústalo hacia la izquierda
+                        ghost.x = wall.x - ghost.size;
+                        break;
+            
+                    default:
+                        break;
+                }
+                
+               
 
                 
                
-            }
-
         }
+
+        
 
 
 
@@ -224,10 +302,11 @@ class Game {
             }
         }  
         
-        handleCollisionWithGhost(pacman, ghost) {
-            pacman.x = Math.round(p_positions[0][0] * 20 + 20 / 2);            
-            pacman.y =Math.round(p_positions[0][1] * 20 + 20 / 2);
+        handleCollisionWithGhost(pacman) {
+            pacman.x =p_positions[0][0] * 20;            
+            pacman.y =p_positions[0][1] * 20;
             pacman.vx = -1;
+            pacman.currentDirection = LEFT;
 
             const ghostIndex = this.ghosts.findIndex(g => g.name === 'blinky');
             if (ghostIndex !== -1) {
@@ -236,14 +315,4 @@ class Game {
         }
 
 
-        //     switch (ghost.name) {
-        //         case 'blinky':
-        //             ghost = new Inky(this.ctx)
-                    
-        //             break;
-            
-        //         default:
-        //             break;
-        //     }
-        // }
 }

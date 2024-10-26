@@ -1,7 +1,7 @@
 class Blinky extends Ghost {
     constructor() {
         const [name, position, color, releaseTime] = ghost_positions.B;
-        super(ctx, name, position, color, releaseTime);
+        super(ctx, name,position, color, releaseTime);
         this.vx = 1;
     }
 
@@ -16,6 +16,10 @@ class Blinky extends Ghost {
         this.y += this.vy;
         
         
+    }
+
+    onKeyDown(e) {
+        super.onKeyDown(e);
     }
 }
 

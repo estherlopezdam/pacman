@@ -7,4 +7,10 @@ class Pinky extends Ghost {
     draw() {
         super.draw();
     }
+    move(pacman) {
+        super.move(pacman);
+    }
+    onKeyDown(e) {
+        super.onKeyDown(e);
+    }
 }

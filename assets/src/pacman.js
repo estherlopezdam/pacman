@@ -3,13 +3,13 @@ class Pacman {
 
   constructor(ctx, size = 10) {
     this.ctx = ctx;
-    this.x = Math.round(p_positions[0][0] * 20 + 20 / 2);
-    this.y =Math.round(p_positions[0][1] * 20 + 20 / 2);
+    this.x = Math.round(p_positions[0][0] * 20);
+    this.y =Math.round(p_positions[0][1] * 20);
     this.vx = -1;
     this.vy = 0;
     this.size = size;  // Tamaño del cuadrado
     this.color = '#800080';  // Color morado para Pac-Man
-    this.currentDirection = 37;
+    this.currentDirection = LEFT;
 }
 
      
@@ -73,11 +73,6 @@ onKeyDown(e) {
 
     this.x += this.vx;
     this.y += this.vy;
-    console.log("estoy en x ", this.x);
-    console.log("estoy en y ", this.y)
-
-
-
   }
 
 }
