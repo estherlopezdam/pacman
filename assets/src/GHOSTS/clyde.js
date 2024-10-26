@@ -4,6 +4,7 @@ class Clyde extends Ghost {
         super(ctx, name, position, color, releaseTime);
         this.vy = 0;
         this.vx = 0;
+        this.image.src = '/assets/img/clyde/stop.png';
 
         
     }
@@ -102,6 +103,8 @@ class Clyde extends Ghost {
                 this.vx = 0;
                 this.vy = 1;
                 this.currentDirection = DOWN;
+                
+
             } else {
                 // Pac-Man está arriba
                 this.vx = 0;

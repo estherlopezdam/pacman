@@ -1,6 +1,6 @@
 canvas {
     border: 5px solid red;
-    background-color: #3b4d61;
+    background-color: black;
 }
   /* Asegurarse de que el cuerpo y html ocupen el 100% de la pantalla */
 html, body {

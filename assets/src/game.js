@@ -6,17 +6,11 @@ class Game {
         this.tick = 0;
         this.currentGhost = null;
 
-        
-        const spriteSheet = new Image();
-        spriteSheet.src = "/assets/img/spriteSheet.png";
-
-        // Definir el número de frames en horizontal y vertical
-        const horizontalFrames = 11;  
-        const verticalFrames = 7; 
+        ; 
         this.pacman = new Pacman(this.ctx);    
 
         // Inicializar el SpriteManager con la hoja de sprites y el número de frames
-        this.spriteManager = new SpriteManager(spriteSheet, horizontalFrames, verticalFrames);
+        this.spriteManager = new SpriteManager(this.ctx);
         
         //this.bg = new Background(this.ctx);
 
@@ -76,6 +70,8 @@ class Game {
         this.intervalID = setInterval(() => {
         
             this.clear();
+            
+
 
             this.draw();
             this.move();
@@ -97,11 +93,14 @@ class Game {
 
         this.pellets.forEach(pellet => pellet.draw());
         this.powerPellets.forEach(powerPellet => powerPellet.draw());
-
+        //this.spriteManager.resetImage(this.pacman);
         this.pacman.draw();
         
-        this.ghosts.forEach(ghost => ghost.draw());
+        this.ghosts.forEach(ghost => {
+           // this.spriteManager.resetImage(ghost) 
+            ghost.draw()});
     }
+    
 
 
     move() {
@@ -184,7 +183,7 @@ class Game {
             const object = objectsArray[i];
     
             // Detectar colisión con paredes (Pac-Man cuadrado vs pared cuadrada)
-            if (object.objectType === 'wall' || object.objectType === 'ghost') {
+            if (object.objectType === 'wall' || object.objectType === 'ghost' || object.objecType === 'powerpellet' || object.objecType === 'pellet') {
                 if (object.y + object.size > pacmanY // El borde inferior del objeto está por debajo del borde superior de Pac-Man
                     && object.y < pacmanY + pacman.size // El borde superior del objeto está por encima del borde inferior de Pac-Man
                     && object.x + object.size > pacmanX // El borde derecho del objeto está a la derecha del borde izquierdo de Pac-Man
@@ -192,39 +191,41 @@ class Game {
                     this.vy = 0;
                     this.vx = 0;
                     if (object.objectType === 'wall') this.handleCollisionWithWall(pacman, object);
-                    else this.handleCollisionWithGhost(pacman);
+                    if (object.objectType === 'ghost') this.handleCollisionWithGhost(pacman);
+                    if (object.objectType === 'powerpellet') this.powerPellets = this.powerPellets.filter(p => !(p === object));                    
+                    if(object.objecType === 'pellet') this.pellets = this.pellets.filter(p => !(p === object));
                 }
             }
-            // Colisión entre Pac-Man (cuadrado) y pellets/power pellets (círculos)
-            else if (object.objectType === 'pellet' || object.objectType === 'powerpellet') {
-                const distX = Math.abs(object.x - (pacman.x + pacman.size / 2)); // Distancia en X desde el centro del pellet al centro de Pac-Man
-                const distY = Math.abs(object.y - (pacman.y + pacman.size / 2)); // Distancia en Y desde el centro del pellet al centro de Pac-Man
+            // // Colisión entre Pac-Man (cuadrado) y pellets/power pellets (círculos)
+            // else if (object.objectType === 'pellet') {
+            //     const distX = Math.abs(object.x - (pacman.x + pacman.size / 2)); // Distancia en X desde el centro del pellet al centro de Pac-Man
+            //     const distY = Math.abs(object.y - (pacman.y + pacman.size / 2)); // Distancia en Y desde el centro del pellet al centro de Pac-Man
     
-                // Si la distancia es mayor que la mitad del cuadrado más el radio, no hay colisión
-                if (distX > (pacman.size / 2 + object.radius) || distY > (pacman.size / 2 + object.radius)) {
-                    continue;
-                }
+            //     // Si la distancia es mayor que la mitad del cuadrado más el radio, no hay colisión
+            //     if (distX > (pacman.size / 2 + object.radius) || distY > (pacman.size / 2 + object.radius)) {
+            //         continue;
+            //     }
     
-                // Si la distancia en X o Y es menor que la mitad del cuadrado, hay colisión
-                if (distX <= (pacman.size / 2) || distY <= (pacman.size / 2)) {
-                    if (object.objectType === 'pellet') {
-                        this.pellets = this.pellets.filter(p => !(p.x === object.x && p.y === object.y));
-                    } else if (object.objectType === 'powerpellet') {
-                        this.powerPellets = this.powerPellets.filter(p => !(p.x === object.x && p.y === object.y));
-                    }
-                }
+            //     // Si la distancia en X o Y es menor que la mitad del cuadrado, hay colisión
+            //     if (distX <= (pacman.size / 2) || distY <= (pacman.size / 2)) {
+            //         if (object.objectType === 'pellet') {
+            //             this.pellets = this.pellets.filter(p => !(p.x === object.x && p.y === object.y));
+            //         } else if (object.objectType === 'powerpellet') {
+            //             this.powerPellets = this.powerPellets.filter(p => !(p.x === object.x && p.y === object.y));
+            //         }
+            //     }
     
-                // Comprobación final si hay colisión en las esquinas del cuadrado
-                const dx = distX - pacman.size / 2;
-                const dy = distY - pacman.size / 2;
-                if ((dx * dx + dy * dy) <= (object.radius * object.radius)) {
-                    if (object.objectType === 'pellet') {
-                        this.pellets = this.pellets.filter(p => !(p.x === object.x && p.y === object.y));
-                    } else if (object.objectType === 'powerpellet') {
-                        this.powerPellets = this.powerPellets.filter(p => !(p.x === object.x && p.y === object.y));
-                    }
-                }
-            }
+            //     // Comprobación final si hay colisión en las esquinas del cuadrado
+            //     const dx = distX - pacman.size / 2;
+            //     const dy = distY - pacman.size / 2;
+            //     if ((dx * dx + dy * dy) <= (object.radius * object.radius)) {
+            //         if (object.objectType === 'pellet') {
+            //             this.pellets = this.pellets.filter(p => !(p.x === object.x && p.y === object.y));
+            //         } else if (object.objectType === 'powerpellet') {
+            //             this.powerPellets = this.powerPellets.filter(p => !(p.x === object.x && p.y === object.y));
+            //         }
+            //     }
+            // }
         }
     }
 

@@ -8,7 +8,7 @@ class Wall {
         this.size = 20;
         this.objectType = 'wall';
         this.image = new Image();
-        this.image.src = '/assets/img/4.png';
+        this.image.src = '/assets/img/wall.png';
         
     }
 
