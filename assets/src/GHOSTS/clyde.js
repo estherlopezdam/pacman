@@ -26,6 +26,7 @@ class Clyde extends Ghost {
     
         // Una vez que el tick alcanza el releaseTime, comenzar el movimiento
         if (this.tick === this.releaseTime) {
+            this.currentDirection = UP;
             this.vy = -1;  // Iniciar movimiento hacia arriba
         }
 

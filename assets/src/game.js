@@ -23,6 +23,7 @@ class Game {
 
     }
 
+
    
     initWalls(wall_position) {
         this.walls = Wall.createWalls(this.ctx, wall_position);
