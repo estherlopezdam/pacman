@@ -14,8 +14,7 @@ class Blinky extends Ghost {
     }
 
     move(pacman) {
-        this.x += this.vx;
-        this.y += this.vy;
+       super.move(pacman);
         
         
     }

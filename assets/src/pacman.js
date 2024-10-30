@@ -8,7 +8,6 @@ class Pacman {
     this.vx = -1;
     this.vy = 0;
     this.size = size;  // Tamaño del cuadrado
-    this.color = '#800080';  // Color morado para Pac-Man
     this.currentDirection = LEFT;
     this.image = new Image();
     this.image.src = '/assets/img/pacman/LEFT.png';
@@ -20,12 +19,6 @@ class Pacman {
 draw() {
   this.resetImage();
   this.ctx.drawImage(this.image, this.x, this.y, 15, 15);
-
-  // this.ctx.beginPath();
-  // this.ctx.fillStyle = this.color;
-  // this.ctx.fillRect(this.x, this.y, this.size, this.size);  // Dibuja un cuadrado
-  // this.ctx.closePath();
-
   
 }
 

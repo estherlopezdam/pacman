@@ -3,16 +3,18 @@ class Game {
         this.ctx = ctx;
         this.intervalID = null;
         this.level = 1;
-        this.tick = 0;
         this.currentGhost = null;
-
-        ; 
-        this.pacman = new Pacman(this.ctx);    
-
-        // Inicializar el SpriteManager con la hoja de sprites y el número de frames
-        this.spriteManager = new SpriteManager(this.ctx);
+        this.stars = [];
+        this.score = 0;     
+        this.bestScore = localStorage.getItem('bestScore') || 0;
+        this.playerName = localStorage.getItem('playerName') || 'Player';
+        this.lives = 3;
         
-        //this.bg = new Background(this.ctx);
+        this.soundOn = true;
+
+        
+        this.pacman = new Pacman(this.ctx);        
+        
 
         // Inicialización de los arrays de objetos del mapa
         this.pellets = []; 
@@ -21,6 +23,132 @@ class Game {
         this.ghosts = [];
 
 
+    }
+    initialize() {
+        // Crear pantalla de carga
+        this.createLoadingScreen();
+    }
+
+    createLoadingScreen() {
+        // Crear el contenedor de la pantalla de carga
+        const loadingScreen = document.createElement('div');
+        loadingScreen.id = 'loadingScreen';
+        loadingScreen.style.position = 'fixed';
+        loadingScreen.style.top = '0';
+        loadingScreen.style.left = '0';
+        loadingScreen.style.width = '100%';
+        loadingScreen.style.height = '100%';
+        loadingScreen.style.background = "url('/assets/img/loading-background.png') no-repeat center center fixed";
+        loadingScreen.style.backgroundSize = 'cover';
+        loadingScreen.style.display = 'flex';
+        loadingScreen.style.justifyContent = 'center';
+        loadingScreen.style.alignItems = 'center';
+
+        // Contenido del loadingScreen
+        const loadingContent = document.createElement('div');
+        loadingContent.style.textAlign = 'center';
+        loadingContent.style.background = 'rgba(0, 0, 0, 0.7)';
+        loadingContent.style.padding = '30px';
+        loadingContent.style.borderRadius = '15px';
+
+        // Título
+        const title = document.createElement('h1');
+        title.textContent = 'Welcome to Pac-Adventures!';
+        title.style.color = '#FFD700';
+        title.style.marginBottom = '20px';
+        loadingContent.appendChild(title);
+
+        // Campo de entrada del nombre del jugador
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.id = 'playerName';
+        nameInput.placeholder = 'Enter your name';
+        nameInput.style.fontFamily = 'Press Start 2P, cursive';
+        nameInput.style.padding = '10px';
+        nameInput.style.marginBottom = '20px';
+        nameInput.style.width = '80%';
+        loadingContent.appendChild(nameInput);
+
+        // Botones
+        const buttonsDiv = document.createElement('div');
+
+        // Botón de inicio
+        const startButton = document.createElement('button');
+        startButton.id = 'startGameButton';
+        startButton.textContent = 'Start Game';
+        startButton.style.margin = '10px';
+        startButton.style.padding = '10px 20px';
+        startButton.style.fontFamily = 'Press Start 2P, cursive';
+        startButton.style.backgroundColor = '#4CAF50';
+        startButton.style.color = '#ffffff';
+        startButton.style.border = 'none';
+        startButton.style.cursor = 'pointer';
+        startButton.addEventListener('click', () => this.startGame(nameInput.value));
+        buttonsDiv.appendChild(startButton);
+
+        // Botón de sonido ON/OFF
+        const soundButton = document.createElement('button');
+        soundButton.id = 'toggleSoundButton';
+        soundButton.textContent = 'Sound: ON';
+        soundButton.style.margin = '10px';
+        soundButton.style.padding = '10px 20px';
+        soundButton.style.fontFamily = 'Press Start 2P, cursive';
+        soundButton.style.backgroundColor = '#4CAF50';
+        soundButton.style.color = '#ffffff';
+        soundButton.style.border = 'none';
+        soundButton.style.cursor = 'pointer';
+        soundButton.addEventListener('click', () => this.toggleSound(soundButton));
+        buttonsDiv.appendChild(soundButton);
+
+        // Botón de controles
+        const controlsButton = document.createElement('button');
+        controlsButton.id = 'controlsButton';
+        controlsButton.textContent = 'Controls';
+        controlsButton.style.margin = '10px';
+        controlsButton.style.padding = '10px 20px';
+        controlsButton.style.fontFamily = 'Press Start 2P, cursive';
+        controlsButton.style.backgroundColor = '#4CAF50';
+        controlsButton.style.color = '#ffffff';
+        controlsButton.style.border = 'none';
+        controlsButton.style.cursor = 'pointer';
+        controlsButton.addEventListener('click', () => this.showControls());
+        buttonsDiv.appendChild(controlsButton);
+
+        loadingContent.appendChild(buttonsDiv);
+        loadingScreen.appendChild(loadingContent);
+
+        // Añadir la pantalla de carga al body
+        document.body.appendChild(loadingScreen);
+    }
+
+    startGame(playerName) {
+        if (!playerName.trim()) {
+            alert('Please enter your name to start the game!');
+            return;
+        }
+
+        // Guardar nombre del jugador
+        this.playerName = playerName;
+        localStorage.setItem('playerName', playerName);
+
+        // Ocultar la pantalla de carga y mostrar el juego
+        document.getElementById('loadingScreen').style.display = 'none';
+        const gameContainer = document.querySelector('.title-container');
+        gameContainer.style.visibility = 'visible';
+        gameContainer.display = 'block';
+
+        // Iniciar el juego
+        this.updateScore();
+        this.start();
+    }
+
+    toggleSound(button) {
+        this.soundOn = !this.soundOn;
+        button.textContent = `Sound: ${this.soundOn ? 'ON' : 'OFF'}`;
+    }
+
+    showControls() {
+        alert('Use arrow keys to move Pac-Man. Avoid ghosts and collect all pellets!');
     }
 
 
@@ -47,25 +175,58 @@ class Game {
         
     }
 
+    loseLife() {
+        // Reducir el número de vidas y actualizar la pantalla
+        if (this.lives > 0) {
+            this.lives--;
+            this.initializeLives(); // Actualizar la visualización de las vidas
+        }
+
+        // Si el jugador se queda sin vidas, terminar el juego
+        if (this.lives <= 0) {
+            this.gameOver();
+        }
+    }
+
+    restartGame() {
+        // Reiniciar el puntaje y empezar una nueva partida
+        this.score = 0;
+        this.start();
+    }
+
     nextLevel() {
         if (this.powerPellets.length === 0 && this.pellets.length === 0) {
             this.level++;
-            this.initGhost();
-            this.initWalls(wall_position);
-            this.initPellets(pellet_positions, powerPellets_positions);
             this.pacman = new Pacman(this.ctx);
+            this.start();
         }
-
         
+    }   
+    
+    
+    increaseScore() {
+        if (this.score > this.bestScore) {
+            this.bestScore = this.score;
+            localStorage.setItem('bestScore', this.bestScore);
+        }
+        this.updateScore();
     }
+
+    updateScore() {
+        document.getElementById('score').textContent = `Score: ${this.score}`;
+        document.getElementById('bestScore').textContent = `Best Score: ${this.bestScore}`;
+    }
+   
     
 
     start() {    
 
-       
+        this.clear();
         this.initGhost();
         this.initWalls(wall_position);
         this.initPellets(pellet_positions, powerPellets_positions);
+        
+        this.updateScore();
         
        
         this.intervalID = setInterval(() => {
@@ -76,8 +237,9 @@ class Game {
 
             this.draw();
             this.move();
-
-            this.tick++;
+            this.increaseScore();
+            
+            this.initializeLives();
 
 
             this.checkCollisions(this.pacman, this.walls, this.powerPellets,this.pellets, this.ghosts);
@@ -89,16 +251,98 @@ class Game {
         }, 1000 / 60);
     }
 
+    gameOver() {
+        this.clear();
+        // Mostrar mensaje de "Game Over"
+        alert("Game Over!");
+
+        // Actualizar ranking con el puntaje actual
+        this.updateRanking();
+
+        // Mostrar el ranking de los mejores jugadores
+        this.showRanking();
+        this.clearInterval(this.intervalID);
+    }
+
+    updateRanking() {
+        // Obtener el ranking actual desde localStorage
+        const rankings = JSON.parse(localStorage.getItem('rankings')) || [];
+
+        // Añadir el puntaje del jugador actual
+        rankings.push({ name: this.playerName, score: this.score });
+
+        // Ordenar el ranking por el puntaje, de mayor a menor
+        rankings.sort((a, b) => b.score - a.score);
+
+        // Mantener solo los 10 mejores
+        if (rankings.length > 10) rankings.pop();
+
+        // Guardar el ranking actualizado en localStorage
+        localStorage.setItem('rankings', JSON.stringify(rankings));
+    }
+
+    showRanking() {
+        // Crear el contenedor de la pantalla de "Game Over" y mostrar el ranking
+        const rankingScreen = document.createElement('div');
+        rankingScreen.id = 'rankingScreen';
+        rankingScreen.style.position = 'fixed';
+        rankingScreen.style.top = '0';
+        rankingScreen.style.left = '0';
+        rankingScreen.style.width = '100%';
+        rankingScreen.style.height = '100%';
+        rankingScreen.style.background = 'rgba(0, 0, 0, 0.8)';
+        rankingScreen.style.color = '#ffffff';
+        rankingScreen.style.display = 'flex';
+        rankingScreen.style.flexDirection = 'column';
+        rankingScreen.style.justifyContent = 'center';
+        rankingScreen.style.alignItems = 'center';
+        rankingScreen.style.zIndex = '20';
+
+        const title = document.createElement('h2');
+        title.textContent = 'Game Over - Top 10 Rankings';
+        title.style.marginBottom = '20px';
+        rankingScreen.appendChild(title);
+
+        // Obtener el ranking desde localStorage y mostrarlo
+        const rankings = JSON.parse(localStorage.getItem('rankings')) || [];
+
+        const rankingList = document.createElement('ol');
+        rankings.forEach((entry) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${entry.name}: ${entry.score}`;
+            rankingList.appendChild(listItem);
+        });
+        rankingScreen.appendChild(rankingList);
+
+        // Botón para reiniciar el juego
+        const restartButton = document.createElement('button');
+        restartButton.textContent = 'Restart Game';
+        restartButton.style.marginTop = '20px';
+        restartButton.style.padding = '10px 20px';
+        restartButton.style.fontFamily = 'Press Start 2P, cursive';
+        restartButton.style.backgroundColor = '#4CAF50';
+        restartButton.style.color = '#ffffff';
+        restartButton.style.border = 'none';
+        restartButton.style.cursor = 'pointer';
+        restartButton.addEventListener('click', () => {
+            rankingScreen.style.display = 'none';
+            this.restartGame();
+        });
+        rankingScreen.appendChild(restartButton);
+
+        document.body.appendChild(rankingScreen);
+    }
+
     draw() {
+        
         this.walls.forEach(wall => wall.draw());
 
         this.pellets.forEach(pellet => pellet.draw());
         this.powerPellets.forEach(powerPellet => powerPellet.draw());
-        //this.spriteManager.resetImage(this.pacman);
         this.pacman.draw();
         
         this.ghosts.forEach(ghost => {
-           // this.spriteManager.resetImage(ghost) 
+           
             ghost.draw()});
     }
     
@@ -192,41 +436,23 @@ class Game {
                     this.vy = 0;
                     this.vx = 0;
                     if (object.objectType === 'wall') this.handleCollisionWithWall(pacman, object);
-                    if (object.objectType === 'ghost') this.handleCollisionWithGhost(pacman);
-                    if (object.objectType === 'powerpellet') this.powerPellets = this.powerPellets.filter(p => !(p === object));                    
-                    if(object.objecType === 'pellet') this.pellets = this.pellets.filter(p => !(p === object));
+                    if (object.objectType === 'ghost') {
+                        this.handleCollisionWithGhost(pacman);
+                        this.loseLife();
+                    }    
+                    if (object.objectType === 'powerpellet') {
+
+                        this.score += 10;
+                        this.powerPellets = this.powerPellets.filter(p => !(p === object));
+                    }                    
+                    if(object.objecType === 'pellet') {
+                        this.score += 5;
+                        this.pellets = this.pellets.filter(p => !(p === object));
+                    }
+                    if( this.pellets.length === 0 && this.powerPellets.length === 0) this.nextLevel();
                 }
             }
-            // // Colisión entre Pac-Man (cuadrado) y pellets/power pellets (círculos)
-            // else if (object.objectType === 'pellet') {
-            //     const distX = Math.abs(object.x - (pacman.x + pacman.size / 2)); // Distancia en X desde el centro del pellet al centro de Pac-Man
-            //     const distY = Math.abs(object.y - (pacman.y + pacman.size / 2)); // Distancia en Y desde el centro del pellet al centro de Pac-Man
-    
-            //     // Si la distancia es mayor que la mitad del cuadrado más el radio, no hay colisión
-            //     if (distX > (pacman.size / 2 + object.radius) || distY > (pacman.size / 2 + object.radius)) {
-            //         continue;
-            //     }
-    
-            //     // Si la distancia en X o Y es menor que la mitad del cuadrado, hay colisión
-            //     if (distX <= (pacman.size / 2) || distY <= (pacman.size / 2)) {
-            //         if (object.objectType === 'pellet') {
-            //             this.pellets = this.pellets.filter(p => !(p.x === object.x && p.y === object.y));
-            //         } else if (object.objectType === 'powerpellet') {
-            //             this.powerPellets = this.powerPellets.filter(p => !(p.x === object.x && p.y === object.y));
-            //         }
-            //     }
-    
-            //     // Comprobación final si hay colisión en las esquinas del cuadrado
-            //     const dx = distX - pacman.size / 2;
-            //     const dy = distY - pacman.size / 2;
-            //     if ((dx * dx + dy * dy) <= (object.radius * object.radius)) {
-            //         if (object.objectType === 'pellet') {
-            //             this.pellets = this.pellets.filter(p => !(p.x === object.x && p.y === object.y));
-            //         } else if (object.objectType === 'powerpellet') {
-            //             this.powerPellets = this.powerPellets.filter(p => !(p.x === object.x && p.y === object.y));
-            //         }
-            //     }
-            // }
+         
         }
     }
 
@@ -255,7 +481,8 @@ class Game {
         
                 default:
                     break;
-            }                        
+            }     
+            ghost.changeDirection(this.pacman);                
     }
 
     handleCollisionWithWall(pacman, wall) {
@@ -305,6 +532,39 @@ class Game {
                     return ghost;
             }
         });
+    }
+
+    initializeLives() {
+        // Crear el contenedor de vidas
+        let livesContainer = document.getElementById('livesContainer');
+        if (!livesContainer) {
+            livesContainer = document.createElement('div');
+            livesContainer.id = 'livesContainer';
+            livesContainer.style.display = 'flex';
+            livesContainer.style.justifyContent = 'center';
+            livesContainer.style.marginBottom = '20px';
+           // Añadir el contenedor de vidas al comienzo del game-container
+            const gameContainer = document.querySelector('.title-container');
+            if (gameContainer) {
+                gameContainer.appendChild(livesContainer);
+            } else {
+                console.error('Error: no se pudo encontrar el game-container.');
+                return;
+            }
+        }
+
+        // Limpiar cualquier corazón existente
+        livesContainer.innerHTML = '';
+
+        // Añadir corazones según la cantidad de vidas
+        for (let i = 0; i < this.lives; i++) {
+            const heart = document.createElement('span');
+            heart.className = 'life-heart';
+            heart.innerHTML = '❤️'; // Puedes usar un icono de corazón o una imagen
+            heart.style.fontSize = '24px';
+            heart.style.margin = '0 5px';
+            livesContainer.appendChild(heart);
+        }
     }
 
 

@@ -9,7 +9,7 @@ class Inky extends Ghost {
         super.draw();
     }
     move(pacman) {
-        super.move();
+        super.move(pacman);
     }
 
     onKeyDown(e) {

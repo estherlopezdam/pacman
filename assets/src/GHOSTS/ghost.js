@@ -71,7 +71,7 @@ resetImage() {
 
 move(pacman) {
     this.x += this.vx;
-    this.y += this.vy;
+    this.y += this.vy;     
 
     // Esperar hasta que se cumpla el releaseTime
     if (this.tick < this.releaseTime) {
@@ -81,60 +81,55 @@ move(pacman) {
 
     // Una vez que el tick alcanza el releaseTime, comenzar el movimiento
     if (this.tick === this.releaseTime) {
+        this.currentDirection = UP;
         this.vy = -1;  // Iniciar movimiento hacia arriba
-        this.releaseTime = 0;
     }
 
     this.tick++;
+    
+   
 
-    for (let i = 0; i < direction_change_positions.length; i++) {
-        const puntoClave = direction_change_positions[i];
+    for(let i = 0; i < direction_change_positions.length; i++) {
+       
+        const puntoClave =  direction_change_positions[i];
         const puntoClaveX = puntoClave[0] * 20;
         const puntoClaveY = puntoClave[1] * 20;
-
+        
         const distanceToChangePoint = Math.sqrt(
-            Math.pow(this.x - puntoClaveX, 2) + Math.pow(this.y - puntoClaveY, 2)
-        );
+        Math.pow(this.x - puntoClaveX, 2) + Math.pow(this.y - puntoClaveY, 2)
+    );
 
-        // Verificar si el fantasma está atascado en un punto de cambio
-        if (distanceToChangePoint <= this.minDistance && this.tick > 200) {
-            this.canChangeDirection = true;
-            this.tick = 1;
-        }
-
-        if (distanceToChangePoint <= this.minDistance &&
-            (this.lastChangeX !== puntoClaveX || this.lastChangeY !== puntoClaveY)) {
-            this.tick = 1;
-            this.canChangeDirection = true;
-        }
-
-        if (this.x === puntoClaveX && this.y === puntoClaveY && this.canChangeDirection) {
-            if ((puntoClaveX === 13 * 20 && puntoClaveY === 11 * 20) || (puntoClaveX === 13 * 20 && puntoClaveY === 11 * 20)) {
-                this.canChangeDirection = false;
-                if (pacman.x > puntoClaveX) {
-                    this.vx = 1;
-                    this.vy = 0;
-                    this.currentDirection = 'right';
-                    this.image.src = '/assets/img/RIGHT.png';
-                    break;
-                } else {
-                    this.vx = -1;
-                    this.vy = 0;
-                    this.currentDirection = 'left';
-                    this.image.src = '/assets/img/LEFT.png';
-                    break;
-                }
+            if (distanceToChangePoint <= this.minDistance && 
+                (this.lastChangeX !== puntoClaveX || this.lastChangeY !== puntoClaveY)) {
+                
+                this.canChangeDirection = true;
             }
+        
 
-            this.lastChangeX = puntoClaveX;
-            this.lastChangeY = puntoClaveY;
+        
+            if(this.x === puntoClaveX && this.y === puntoClaveY && this.canChangeDirection) {
 
-            // Si el fantasma está atascado, recalcula la dirección
-            if (this.tick > 200) {
+                if ((puntoClaveX === 13 * 20 && puntoClaveY === 11 * 20) || (puntoClaveX === 14 * 20 && puntoClaveY === 11 * 20) ) {
+                    this.canChangeDirection = false;
+                    if(pacman.x > puntoClaveX) {
+                        this.vx = 1;
+                        this.vy = 0;
+                        this.currentDirection = RIGHT;
+                        break;
+                    } else {
+                        this.vx = - 1;
+                        this.vy = 0;
+                        this.currentDirection = LEFT;
+                        break;
+                    }
+                }
+                
+                this.lastChangeX = puntoClaveX;
+                this.lastChangeY = puntoClaveY;
+                
                 this.changeDirection(pacman);
                 this.canChangeDirection = false;
             }
-        }
     }
 }
 // move(pacman) {
