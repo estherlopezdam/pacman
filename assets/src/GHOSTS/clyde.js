@@ -19,12 +19,14 @@ class Clyde extends Ghost {
     }
 
     changeDirection(pacman) {
+
+       
         // Calcular las distancias en los ejes X e Y entre Pac-Man y el fantasma
         const distanceX = Math.abs(pacman.x - this.x);
         const distanceY = Math.abs(pacman.y - this.y);
 
         // Evaluar la distancia menor para decidir la dirección a seguir
-        if (distanceX > distanceY) {
+        if (distanceX > distanceY && (!this.forbiddenDirections.includes(RIGHT) && !this.forbiddenDirections.includes(LEFT)) ) {
             // Si la distancia en X es mayor, elegir moverse en el eje X
             if (pacman.x > this.x) {
                 // Pac-Man está a la derecha
@@ -39,7 +41,7 @@ class Clyde extends Ghost {
             }
         } else {
             // Si la distancia en Y es mayor o igual, elegir moverse en el eje Y
-            if (pacman.y > this.y) {
+            if (pacman.y > this.y && !this.forbiddenDirections.includes(DOWN)) {
                 // Pac-Man está abajo
                 this.vx = 0;
                 this.vy = 1;

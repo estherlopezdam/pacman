@@ -14,6 +14,7 @@ class Ghost {
         this.lastChangeX = 0;
         this.lastChangeY = 0;
         this.currentGhost = null;
+        this.forbiddenDirections = [];
         this.image = new Image();
         
 
@@ -47,19 +48,19 @@ draw() {
 resetImage() {
     switch (this.currentDirection) {
         case UP:
-            this.image.src = `/assets/img/${this.name}/UP.png`;          
+            this.image.src = `assets/img/${this.name}/UP.png`;          
             
             break;
         case DOWN:
-            this.image.src = `/assets/img/${this.name}/DOWN.png`;          
+            this.image.src = `assets/img/${this.name}/DOWN.png`;          
             
             break;
         case LEFT:
-            this.image.src = `/assets/img/${this.name}/LEFT.png`;          
+            this.image.src = `assets/img/${this.name}/LEFT.png`;          
             
             break;
         case RIGHT:
-            this.image.src = `/assets/img/${this.name}/RIGHT.png`;          
+            this.image.src = `assets/img/${this.name}/RIGHT.png`;          
             
             break;
     

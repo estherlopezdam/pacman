@@ -9,6 +9,7 @@ class Game {
         this.bestScore = localStorage.getItem('bestScore') || 0;
         this.playerName = localStorage.getItem('playerName') || 'Player';
         this.lives = 3;
+        this.rankings = [];
         
         this.soundOn = true;
 
@@ -191,6 +192,9 @@ class Game {
     restartGame() {
         // Reiniciar el puntaje y empezar una nueva partida
         this.score = 0;
+        this.level = 1;
+        this.lives = 3;
+        this.ghosts = [];
         this.start();
     }
 
@@ -250,87 +254,173 @@ class Game {
  
         }, 1000 / 60);
     }
+    gameOver() {
+
+        clearInterval(this.intervalID);
+        this.clear();
+        this.updateRanking();
+        // Obtener el contenedor del cuerpo o crear un elemento para mostrar la pantalla de Game Over
+        const gameOverContainer = document.createElement('div');
+        gameOverContainer.classList.add('game-over-container');
+    
+        // Título de Game Over
+        const gameOverTitle = document.createElement('h1');
+        gameOverTitle.classList.add('game-over-title');
+        gameOverTitle.textContent = 'Game Over';
+        gameOverContainer.appendChild(gameOverTitle);
+    
+        // Título del ranking
+        const rankingTitle = document.createElement('h2');
+        rankingTitle.classList.add('ranking-title');
+        rankingTitle.textContent = 'Ranking Top 10';
+        gameOverContainer.appendChild(rankingTitle);
+    
+        // Lista del ranking
+        const rankingList = document.createElement('ul');
+        rankingList.classList.add('ranking-list');
+    
+        // Suponiendo que los puntajes están almacenados en `this.highScores`
+        this.rankings
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 10)
+          .forEach((score, index) => {
+            const listItem = document.createElement('li');
+            
+            // Posición
+            const position = document.createElement('span');
+            position.classList.add('position');
+            position.textContent = `#${index + 1}`;
+            listItem.appendChild(position);
+            
+            // Nombre del jugador
+            const name = document.createElement('span');
+            name.classList.add('name');
+            name.textContent = score.name;
+            listItem.appendChild(name);
+            
+            // Puntaje del jugador
+            const scoreElement = document.createElement('span');
+            scoreElement.classList.add('score');
+            scoreElement.textContent = score.score;
+            listItem.appendChild(scoreElement);
+    
+            rankingList.appendChild(listItem);
+          });
+    
+            gameOverContainer.appendChild(rankingList);
+        
+            // Botón para reintentar
+            const retryButton = document.createElement('button');
+            retryButton.classList.add('retry-button');
+            retryButton.textContent = 'Reintentar';
+            retryButton.addEventListener('click', () => {
+            this.resetGame();
+            });
+            gameOverContainer.appendChild(retryButton);
+        
+            // Limpiar la pantalla del juego y mostrar el contenedor de Game Over
+            document.body.innerHTML = '';
+            document.body.appendChild(gameOverContainer);
+      }
 
     gameOver() {
+        clearInterval(this.intervalID);
         this.clear();
-        // Mostrar mensaje de "Game Over"
-        alert("Game Over!");
+       
 
         // Actualizar ranking con el puntaje actual
         this.updateRanking();
 
         // Mostrar el ranking de los mejores jugadores
         this.showRanking();
-        this.clearInterval(this.intervalID);
     }
+   
+
+    
 
     updateRanking() {
         // Obtener el ranking actual desde localStorage
-        const rankings = JSON.parse(localStorage.getItem('rankings')) || [];
+        this.rankings = JSON.parse(localStorage.getItem('rankings')) || [];
 
         // Añadir el puntaje del jugador actual
-        rankings.push({ name: this.playerName, score: this.score });
+        this.rankings.push({ name: this.playerName, score: this.score });
 
         // Ordenar el ranking por el puntaje, de mayor a menor
-        rankings.sort((a, b) => b.score - a.score);
+       this.rankings.sort((a, b) => b.score - a.score);
 
         // Mantener solo los 10 mejores
-        if (rankings.length > 10) rankings.pop();
+        if (this.rankings.length > 10) this.rankings.pop();
 
         // Guardar el ranking actualizado en localStorage
-        localStorage.setItem('rankings', JSON.stringify(rankings));
+        localStorage.setItem('rankings', JSON.stringify(this.rankings));
     }
 
     showRanking() {
-        // Crear el contenedor de la pantalla de "Game Over" y mostrar el ranking
-        const rankingScreen = document.createElement('div');
-        rankingScreen.id = 'rankingScreen';
-        rankingScreen.style.position = 'fixed';
-        rankingScreen.style.top = '0';
-        rankingScreen.style.left = '0';
-        rankingScreen.style.width = '100%';
-        rankingScreen.style.height = '100%';
-        rankingScreen.style.background = 'rgba(0, 0, 0, 0.8)';
-        rankingScreen.style.color = '#ffffff';
-        rankingScreen.style.display = 'flex';
-        rankingScreen.style.flexDirection = 'column';
-        rankingScreen.style.justifyContent = 'center';
-        rankingScreen.style.alignItems = 'center';
-        rankingScreen.style.zIndex = '20';
-
-        const title = document.createElement('h2');
-        title.textContent = 'Game Over - Top 10 Rankings';
-        title.style.marginBottom = '20px';
-        rankingScreen.appendChild(title);
-
+        const gameOverContainer = document.createElement('div');
+        gameOverContainer.classList.add('game-over-container');
+    
+        // Título de Game Over
+        const gameOverTitle = document.createElement('h1');
+        gameOverTitle.classList.add('game-over-title');
+        gameOverTitle.textContent = 'Game Over';
+        gameOverContainer.appendChild(gameOverTitle);
+    
+        // Título del ranking
+        const rankingTitle = document.createElement('h2');
+        rankingTitle.classList.add('ranking-title');
+        rankingTitle.textContent = 'Ranking Top 10';
+        gameOverContainer.appendChild(rankingTitle);
+    
+        // Lista del ranking
+        const rankingList = document.createElement('ul');
+        rankingList.classList.add('ranking-list');
+    
         // Obtener el ranking desde localStorage y mostrarlo
-        const rankings = JSON.parse(localStorage.getItem('rankings')) || [];
+        this.rankings = JSON.parse(localStorage.getItem('rankings')) || [];
 
-        const rankingList = document.createElement('ol');
-        rankings.forEach((entry) => {
-            const listItem = document.createElement('li');
-            listItem.textContent = `${entry.name}: ${entry.score}`;
-            rankingList.appendChild(listItem);
-        });
-        rankingScreen.appendChild(rankingList);
+         // Suponiendo que los puntajes están almacenados en `this.highScores`
+         this.rankings
+         .sort((a, b) => b.score - a.score)
+         .slice(0, 10)
+         .forEach((score, index) => {
+           const listItem = document.createElement('li');
+           
+           // Posición
+           const position = document.createElement('span');
+           position.classList.add('position');
+           position.textContent = `#${index + 1}`;
+           listItem.appendChild(position);
+           
+           // Nombre del jugador
+           const name = document.createElement('span');
+           name.classList.add('name');
+           name.textContent = score.name;
+           listItem.appendChild(name);
+           
+           // Puntaje del jugador
+           const scoreElement = document.createElement('span');
+           scoreElement.classList.add('score');
+           scoreElement.textContent = score.score;
+           listItem.appendChild(scoreElement);
+   
+           rankingList.appendChild(listItem);
+         });
+   
+           gameOverContainer.appendChild(rankingList);
+       
+           // Botón para reintentar
+           const retryButton = document.createElement('button');
+           retryButton.classList.add('retry-button');
+           retryButton.textContent = 'Reintentar';
+           retryButton.addEventListener('click', () => {
+           this.resetGame();
+           });
+           gameOverContainer.appendChild(retryButton);
+       
+           // Limpiar la pantalla del juego y mostrar el contenedor de Game Over
+           document.body.innerHTML = '';
+           document.body.appendChild(gameOverContainer);
 
-        // Botón para reiniciar el juego
-        const restartButton = document.createElement('button');
-        restartButton.textContent = 'Restart Game';
-        restartButton.style.marginTop = '20px';
-        restartButton.style.padding = '10px 20px';
-        restartButton.style.fontFamily = 'Press Start 2P, cursive';
-        restartButton.style.backgroundColor = '#4CAF50';
-        restartButton.style.color = '#ffffff';
-        restartButton.style.border = 'none';
-        restartButton.style.cursor = 'pointer';
-        restartButton.addEventListener('click', () => {
-            rankingScreen.style.display = 'none';
-            this.restartGame();
-        });
-        rankingScreen.appendChild(restartButton);
-
-        document.body.appendChild(rankingScreen);
     }
 
     draw() {
@@ -403,6 +493,7 @@ class Game {
 
     checkGhostCollision(ghosts, walls) {
         ghosts.forEach(ghost => {
+            ghost.forbiddenDirections = [];
             walls.forEach(wall => {
                 if (wall.y + wall.size > ghost.y // El borde inferior del objeto está por debajo del borde superior de Pac-Man
                     && wall.y < ghost.y + ghost.size // El borde superior del objeto está por encima del borde inferior de Pac-Man
@@ -456,11 +547,11 @@ class Game {
         }
     }
 
-    ghostHandleCollisionWithWall(ghost, wall) {         
+    ghostHandleCollisionWithWall(ghost, wall) {  
+               
         
             switch (ghost.currentDirection) {
-                case UP:
-                    // Pac-Man se mueve hacia arriba, ajústalo hacia abajo
+                case UP:                    
                     ghost.y = wall.y + wall.height;
                     break;
         
@@ -482,8 +573,10 @@ class Game {
                 default:
                     break;
             }     
+            ghost.forbiddenDirections.push(ghost.currentDirection);
             ghost.changeDirection(this.pacman);                
     }
+
 
     handleCollisionWithWall(pacman, wall) {
         // Ajustar la posición de Pac-Man basado en la dirección actual
@@ -547,10 +640,7 @@ class Game {
             const gameContainer = document.querySelector('.title-container');
             if (gameContainer) {
                 gameContainer.appendChild(livesContainer);
-            } else {
-                console.error('Error: no se pudo encontrar el game-container.');
-                return;
-            }
+            } 
         }
 
         // Limpiar cualquier corazón existente
