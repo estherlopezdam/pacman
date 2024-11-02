@@ -1,13 +1,12 @@
 class Pacman {
 
-
   constructor(ctx, size = 15) {
     this.ctx = ctx;
     this.x = Math.round(p_positions[0][0] * 20);
     this.y =Math.round(p_positions[0][1] * 20);
     this.vx = -1;
     this.vy = 0;
-    this.size = size;  // Tamaño del cuadrado
+    this.size = size;  // Square size
     this.currentDirection = LEFT;
     this.image = new Image();
     this.image.src = 'assets/img/pacman/LEFT.png';

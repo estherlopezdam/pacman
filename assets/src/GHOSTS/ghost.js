@@ -18,26 +18,25 @@ class Ghost {
         this.image = new Image();
         
 
-        //this.level = level;  // Nivel del fantasma
-       // this.factorAceleration = factorAceleration;  // Factor de aceleración para ajustar la velocidad
+        //this.level = level;  // Ghost level
+        // this.factorAceleration = factorAceleration;  // Acceleration factor to adjust the speed
 
-        
           
-        // Inicializar posición y velocidad
-        this.x = this.position[0] * 20;  // Posición inicial en el eje X
-        this.y = this.position[1] * 20;  // Posición inicial en el eje Y
-        this.vx = 0;  // Velocidad en el eje X
-        this.vy = 0;  // Velocidad en el eje Y
+        // Initialize the direction and the speed
+        this.x = this.position[0] * 20;  // Initial position in the X axis
+        this.y = this.position[1] * 20;  // Initial position in the Y axis
+        this.vx = 0;  // Speed in the X axis
+        this.vy = 0;  // Speed in the Y axis
 }
 
-// Método para actualizar el movimiento del fantasma
-updatePosition() {
- // Aquí puedes ajustar las velocidades vx y vy según las direcciones del movimiento
-    this.x += this.vx;
-    this.y += this.vy;
-}
+// // Method to update the movement of the ghost
+// updatePosition() {
+//  // Here we can set the vx and vy speed depending on the direction of the movement
+//     this.x += this.vx;
+//     this.y += this.vy;
+// }
 
-// Método para dibujar el fantasma
+// Method for drawing the ghost
 draw() {
     this.resetImage();
     this.ctx.drawImage(this.image, this.x, this.y, 20, 20);
@@ -74,16 +73,16 @@ move(pacman) {
     this.x += this.vx;
     this.y += this.vy;     
 
-    // Esperar hasta que se cumpla el releaseTime
+    // Wait until the releaseTime has fulfilled
     if (this.tick < this.releaseTime) {
         this.tick++;
-        return;  // No hacer nada hasta que el tick alcance el releaseTime
+        return; // Do nothing until the tick reaches the releaseTime 
     }
 
-    // Una vez que el tick alcanza el releaseTime, comenzar el movimiento
+    // Once the tick reaches the releaseTime, start the movement
     if (this.tick === this.releaseTime) {
         this.currentDirection = UP;
-        this.vy = -1;  // Iniciar movimiento hacia arriba
+        this.vy = -1;  // Initiate the movement upwards
     }
 
     this.tick++;
@@ -133,78 +132,8 @@ move(pacman) {
             }
     }
 }
-// move(pacman) {
-        
-//     this.x += this.vx;
-//     this.y += this.vy;     
 
-//     // Esperar hasta que se cumpla el releaseTime
-//     if (this.tick < this.releaseTime) {
-//         this.tick++;
-//         return;  // No hacer nada hasta que el tick alcance el releaseTime
-//     }
-
-//     // Una vez que el tick alcanza el releaseTime, comenzar el movimiento
-//     if (this.tick === this.releaseTime) {
-//         this.vy = -1;  // Iniciar movimiento hacia arriba
-//         this.releaseTime =0;
-//     }
-
-//     this.tick++;
     
-   
-
-//     for(let i = 0; i < direction_change_positions.length; i++) {
-       
-//         const puntoClave =  direction_change_positions[i];
-//         const puntoClaveX = puntoClave[0] * 20;
-//         const puntoClaveY = (puntoClave[1] * 20);
-        
-//         const distanceToChangePoint = Math.sqrt(
-//         Math.pow(this.x - puntoClaveX, 2) + Math.pow(this.y - puntoClaveY, 2)
-//     );
-//             if(distanceToChangePoint <= this.minDistance && this.tick > 2000) {
-//                 this.canChangeDirection = true;
-//                 this.tick = 1;
-
-//             } 
-
-//             if (distanceToChangePoint <= this.minDistance && 
-//                 (this.lastChangeX !== puntoClaveX || this.lastChangeY !== puntoClaveY)) {
-//                     this.tick = 1;
-                
-//                 this.canChangeDirection = true;
-//             }
-        
-
-        
-//             if(this.x === puntoClaveX && this.y === puntoClaveY && this.canChangeDirection) {
-
-//                 if ((puntoClaveX === 13 * 20 && puntoClaveY === 11 * 20) || (puntoClaveX === 13 * 20 && puntoClaveY === 11 * 20) ) {
-//                     this.canChangeDirection = false;
-//                     if(pacman.x > puntoClaveX) {
-//                         this.vx = 1;
-//                         this.vy = 0;
-//                         this.currentDirection = RIGHT;
-//                         this.image.src = '/assets/img/RIGHT.png';
-//                         break;
-//                     } else {
-//                         this.vx = - 1;
-//                         this.vy = 0;
-//                         this.currentDirection = LEFT;
-//                         this.image.src = '/assets/img/LEFT.png';
-//                         break;
-//                     }
-//                 }
-                
-//                 this.lastChangeX = puntoClaveX;
-//                 this.lastChangeY = puntoClaveY;
-                
-//                 this.changeDirection(pacman);
-//                 this.canChangeDirection = false;
-//             }
-//     }
-// }
 
 onKeyDown(e) {
     switch (e.keyCode) {
@@ -246,13 +175,43 @@ onKeyDown(e) {
        
         }
     }
+    
     changeDirection(pacman) {
+        // Calculate the distances in the X and Y axes between Pac-Man and the ghost
+        const distanceX = Math.abs(pacman.x - this.x);
+        const distanceY = Math.abs(pacman.y - this.y);
 
+        // Evaluate the less distance to decide the direction to follow
+        if (distanceX > distanceY && (!this.forbiddenDirections.includes(RIGHT) && !this.forbiddenDirections.includes(LEFT)) ) {
+            // If the distance in X is greater, choose to move in the X axis
+            if (pacman.x > this.x) {
+                // Pac-Man is in the right
+                this.vx = 1;
+                this.vy = 0;
+                this.currentDirection = RIGHT;
+            } else {
+                // Pac-Man is in the left
+                this.vx = -1;
+                this.vy = 0;
+                this.currentDirection = LEFT;
+            }
+        } else {
+            // If the distance in Y is greater or equal, choose to move in the Y axis
+            if (pacman.y > this.y && !this.forbiddenDirections.includes(DOWN)) {
+                // Pac-Man is below
+                this.vx = 0;
+                this.vy = 1;
+                this.currentDirection = DOWN;
+                
+
+            } else {
+                // Pac-Man is above
+                this.vx = 0;
+                this.vy = -1;
+                this.currentDirection = UP;
+            }
+        }
     }
 
-    goArround () {
-
-
-    }
 }
 

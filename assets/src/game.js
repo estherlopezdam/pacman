@@ -14,10 +14,10 @@ class Game {
         this.soundOn = true;
 
         
-        this.pacman = new Pacman(this.ctx);        
+        this.pacman = new Pacman(this.ctx);     
+        this.soundManager = new SoundManager(ctx);   
         
-
-        // Inicialización de los arrays de objetos del mapa
+        // Initialize the objects array 
         this.pellets = []; 
         this.powerPellets = [];
         this.walls = [];
@@ -26,12 +26,12 @@ class Game {
 
     }
     initialize() {
-        // Crear pantalla de carga
+        // Create the loading screen
         this.createLoadingScreen();
     }
 
     createLoadingScreen() {
-        // Crear el contenedor de la pantalla de carga
+        // Create the loading screen container
         const loadingScreen = document.createElement('div');
         loadingScreen.id = 'loadingScreen';
         loadingScreen.style.position = 'fixed';
@@ -45,21 +45,21 @@ class Game {
         loadingScreen.style.justifyContent = 'center';
         loadingScreen.style.alignItems = 'center';
 
-        // Contenido del loadingScreen
+        // Content of the loadingScreen
         const loadingContent = document.createElement('div');
         loadingContent.style.textAlign = 'center';
         loadingContent.style.background = 'rgba(0, 0, 0, 0.7)';
         loadingContent.style.padding = '30px';
         loadingContent.style.borderRadius = '15px';
 
-        // Título
+        // Title
         const title = document.createElement('h1');
         title.textContent = 'Welcome to Pac-Adventures!';
         title.style.color = '#FFD700';
         title.style.marginBottom = '20px';
         loadingContent.appendChild(title);
 
-        // Campo de entrada del nombre del jugador
+        // Input blank for the player's name
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
         nameInput.id = 'playerName';
@@ -73,7 +73,7 @@ class Game {
         // Botones
         const buttonsDiv = document.createElement('div');
 
-        // Botón de inicio
+        // Start button
         const startButton = document.createElement('button');
         startButton.id = 'startGameButton';
         startButton.textContent = 'Start Game';
@@ -87,7 +87,7 @@ class Game {
         startButton.addEventListener('click', () => this.startGame(nameInput.value));
         buttonsDiv.appendChild(startButton);
 
-        // Botón de sonido ON/OFF
+        // Sound button ON/OFF
         const soundButton = document.createElement('button');
         soundButton.id = 'toggleSoundButton';
         soundButton.textContent = 'Sound: ON';
@@ -98,10 +98,10 @@ class Game {
         soundButton.style.color = '#ffffff';
         soundButton.style.border = 'none';
         soundButton.style.cursor = 'pointer';
-        soundButton.addEventListener('click', () => this.toggleSound(soundButton));
+        soundButton.addEventListener('click', () => this.tooggleSound(soundButton));
         buttonsDiv.appendChild(soundButton);
 
-        // Botón de controles
+        // Controls button
         const controlsButton = document.createElement('button');
         controlsButton.id = 'controlsButton';
         controlsButton.textContent = 'Controls';
@@ -117,8 +117,8 @@ class Game {
 
         loadingContent.appendChild(buttonsDiv);
         loadingScreen.appendChild(loadingContent);
-
-        // Añadir la pantalla de carga al body
+        
+        // Add the loading screen to the body
         document.body.appendChild(loadingScreen);
     }
 
@@ -127,32 +127,48 @@ class Game {
             alert('Please enter your name to start the game!');
             return;
         }
-
-        // Guardar nombre del jugador
+    
+        // Save the player's name 
         this.playerName = playerName;
         localStorage.setItem('playerName', playerName);
-
-        // Ocultar la pantalla de carga y mostrar el juego
-        document.getElementById('loadingScreen').style.display = 'none';
-        const gameContainer = document.querySelector('.title-container');
-        gameContainer.style.visibility = 'visible';
-        gameContainer.display = 'block';
-
+    
+        // Ocultar la pantalla de carga
+        const loadingScreen = document.getElementById('loadingScreen');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+        }
+    
+        // Mostrar el canvas del juego
+        let canvas = document.getElementById('pacmanCanvas');
+        if (canvas) {
+            canvas.style.display = 'block';
+        } else {
+            // Si el canvas no existe, crearlo
+            canvas = document.createElement('canvas');
+            canvas.id = 'pacmanCanvas';
+            canvas.width = 800;
+            canvas.height = 600;
+            document.body.appendChild(canvas);
+            this.ctx = canvas.getContext('2d');
+        }
+    
         // Iniciar el juego
-        this.updateScore();
+        const scoreContainer = document.getElementById('scoreContainer');
+        if(!scoreContainer) this.createScore();
+        scoreContainer.style.display = 'block';
         this.start();
+        this.soundManager.levelUp.play();
     }
 
-    toggleSound(button) {
+    tooggleSound(button) {
         this.soundOn = !this.soundOn;
         button.textContent = `Sound: ${this.soundOn ? 'ON' : 'OFF'}`;
+        this.soundManager.tooggleSound(this.soundOn);
     }
 
     showControls() {
         alert('Use arrow keys to move Pac-Man. Avoid ghosts and collect all pellets!');
     }
-
-
    
     initWalls(wall_position) {
         this.walls = Wall.createWalls(this.ctx, wall_position);
@@ -176,35 +192,58 @@ class Game {
         
     }
 
-    loseLife() {
-        // Reducir el número de vidas y actualizar la pantalla
+    looseLive() {
+        // Reduce the number of life and update the screen
         if (this.lives > 0) {
             this.lives--;
-            this.initializeLives(); // Actualizar la visualización de las vidas
+            this.soundManager.looseLive.play();
+            this.initializeLives(); // Update the lives on the screen
         }
 
-        // Si el jugador se queda sin vidas, terminar el juego
+        // If the player loses all lives, end the game
         if (this.lives <= 0) {
+            this.soundManager.gameLoop.pause();
             this.gameOver();
         }
     }
 
     restartGame() {
-        // Reiniciar el puntaje y empezar una nueva partida
+        // Limpiar el contenido de la pantalla de game over
+        const gameOverContainer = document.querySelector('.game-over-container');
+        if (gameOverContainer) {
+            gameOverContainer.remove(); // Eliminar la pantalla de game over del DOM
+        }
+    
+        // Restablecer el estado del juego
         this.score = 0;
         this.level = 1;
         this.lives = 3;
         this.ghosts = [];
-        this.start();
+        this.pellets = [];
+        this.powerPellets = [];
+        this.walls = [];
+    
+        // Limpiar canvas y recrearlo
+        let canvas = document.getElementById('pacmanCanvas');
+        if (!canvas) {
+            canvas = document.createElement('canvas');
+            canvas.id = 'pacmanCanvas';
+            canvas.width = 800; // Ajusta el tamaño según el juego
+            canvas.height = 600;
+            document.body.appendChild(canvas);
+        }
+        this.ctx = canvas.getContext('2d');
+    
+        // Iniciar el juego
+        this.startGame(this.playerName);
     }
 
     nextLevel() {
         if (this.powerPellets.length === 0 && this.pellets.length === 0) {
             this.level++;
             this.pacman = new Pacman(this.ctx);
-            this.start();
+            this.startGame();
         }
-        
     }   
     
     
@@ -220,17 +259,37 @@ class Game {
         document.getElementById('score').textContent = `Score: ${this.score}`;
         document.getElementById('bestScore').textContent = `Best Score: ${this.bestScore}`;
     }
+
+    createScore() {
+          // Crear el contenedor de puntaje y agregarlo al DOM
+     const scoreContainer = document.createElement('div');
+     scoreContainer.id = 'scoreContainer';
+ 
+     const score = document.createElement('div');
+     score.id = 'score';
+     score.textContent = 'Score: 0';
+ 
+     const bestScore = document.createElement('div');
+     bestScore.id = 'bestScore';
+     bestScore.textContent = 'Best Score: 0';
+ 
+     scoreContainer.appendChild(score);
+     scoreContainer.appendChild(bestScore);
+      
+     // Insertar el contenedor de puntaje debajo del canvas
+     const canvas = document.getElementById('pacmanCanvas');
+     canvas.insertAdjacentElement('afterend', scoreContainer);
+    }
    
     
 
     start() {    
 
         this.clear();
+        this.soundManager.gameLoop.play();
         this.initGhost();
         this.initWalls(wall_position);
         this.initPellets(pellet_positions, powerPellets_positions);
-        
-        this.updateScore();
         
        
         this.intervalID = setInterval(() => {
@@ -238,166 +297,109 @@ class Game {
             this.clear();
             
 
-
             this.draw();
             this.move();
-            this.increaseScore();
-            
             this.initializeLives();
 
 
             this.checkCollisions(this.pacman, this.walls, this.powerPellets,this.pellets, this.ghosts);
             this.nextLevel();
-
-            
-                
+            this.updateScore();
+            this.increaseScore();
+         
  
         }, 1000 / 60);
     }
-    gameOver() {
-
-        clearInterval(this.intervalID);
-        this.clear();
-        this.updateRanking();
-        // Obtener el contenedor del cuerpo o crear un elemento para mostrar la pantalla de Game Over
-        const gameOverContainer = document.createElement('div');
-        gameOverContainer.classList.add('game-over-container');
-    
-        // Título de Game Over
-        const gameOverTitle = document.createElement('h1');
-        gameOverTitle.classList.add('game-over-title');
-        gameOverTitle.textContent = 'Game Over';
-        gameOverContainer.appendChild(gameOverTitle);
-    
-        // Título del ranking
-        const rankingTitle = document.createElement('h2');
-        rankingTitle.classList.add('ranking-title');
-        rankingTitle.textContent = 'Ranking Top 10';
-        gameOverContainer.appendChild(rankingTitle);
-    
-        // Lista del ranking
-        const rankingList = document.createElement('ul');
-        rankingList.classList.add('ranking-list');
-    
-        // Suponiendo que los puntajes están almacenados en `this.highScores`
-        this.rankings
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 10)
-          .forEach((score, index) => {
-            const listItem = document.createElement('li');
-            
-            // Posición
-            const position = document.createElement('span');
-            position.classList.add('position');
-            position.textContent = `#${index + 1}`;
-            listItem.appendChild(position);
-            
-            // Nombre del jugador
-            const name = document.createElement('span');
-            name.classList.add('name');
-            name.textContent = score.name;
-            listItem.appendChild(name);
-            
-            // Puntaje del jugador
-            const scoreElement = document.createElement('span');
-            scoreElement.classList.add('score');
-            scoreElement.textContent = score.score;
-            listItem.appendChild(scoreElement);
-    
-            rankingList.appendChild(listItem);
-          });
-    
-            gameOverContainer.appendChild(rankingList);
         
-            // Botón para reintentar
-            const retryButton = document.createElement('button');
-            retryButton.classList.add('retry-button');
-            retryButton.textContent = 'Reintentar';
-            retryButton.addEventListener('click', () => {
-            this.resetGame();
-            });
-            gameOverContainer.appendChild(retryButton);
-        
-            // Limpiar la pantalla del juego y mostrar el contenedor de Game Over
-            document.body.innerHTML = '';
-            document.body.appendChild(gameOverContainer);
-      }
 
     gameOver() {
         clearInterval(this.intervalID);
+        
         this.clear();
+        this.soundManager.gameLoop.pause();
+        this.soundManager.gameOver.play();
        
-
-        // Actualizar ranking con el puntaje actual
+        // Update the ranking with the current score
         this.updateRanking();
 
-        // Mostrar el ranking de los mejores jugadores
+        // Show the ranking of the best players
         this.showRanking();
     }
    
 
-    
 
     updateRanking() {
-        // Obtener el ranking actual desde localStorage
+        // Get the current ranking from localStorage or initialize an empty array if it doesn't exist
         this.rankings = JSON.parse(localStorage.getItem('rankings')) || [];
 
-        // Añadir el puntaje del jugador actual
+        // Add the current score to the ranking
         this.rankings.push({ name: this.playerName, score: this.score });
 
-        // Ordenar el ranking por el puntaje, de mayor a menor
+        // Sort the ranking in descending order based on the score
        this.rankings.sort((a, b) => b.score - a.score);
 
-        // Mantener solo los 10 mejores
+        // Keep the top 10 scores if necessary
         if (this.rankings.length > 10) this.rankings.pop();
 
-        // Guardar el ranking actualizado en localStorage
+        // Save the updated ranking to localStorage
         localStorage.setItem('rankings', JSON.stringify(this.rankings));
     }
 
     showRanking() {
+
+        const canvas = document.getElementById('pacmanCanvas');
+        if (canvas) {
+            canvas.style.display = 'none';
+        }
+    
+        const scoreContainer = document.getElementById('scoreContainer');
+        if (scoreContainer) {
+            scoreContainer.style.display = 'none';
+        }
         const gameOverContainer = document.createElement('div');
         gameOverContainer.classList.add('game-over-container');
+        gameOverContainer.style.marginTop = '120px';  // Asegúrate de que no se superponga con el título
+        gameOverContainer.style.textAlign = 'center';
     
-        // Título de Game Over
+        // Game Over Title
         const gameOverTitle = document.createElement('h1');
         gameOverTitle.classList.add('game-over-title');
         gameOverTitle.textContent = 'Game Over';
         gameOverContainer.appendChild(gameOverTitle);
     
-        // Título del ranking
+        // Ranking Title
         const rankingTitle = document.createElement('h2');
         rankingTitle.classList.add('ranking-title');
         rankingTitle.textContent = 'Ranking Top 10';
         gameOverContainer.appendChild(rankingTitle);
     
-        // Lista del ranking
+        // Ranking list
         const rankingList = document.createElement('ul');
         rankingList.classList.add('ranking-list');
     
-        // Obtener el ranking desde localStorage y mostrarlo
+        // Get the ranking from localStorage and display it
         this.rankings = JSON.parse(localStorage.getItem('rankings')) || [];
 
-         // Suponiendo que los puntajes están almacenados en `this.highScores`
+         // Supposing that the scores are stored in `this.highScores`
          this.rankings
          .sort((a, b) => b.score - a.score)
          .slice(0, 10)
          .forEach((score, index) => {
            const listItem = document.createElement('li');
            
-           // Posición
+           // Position
            const position = document.createElement('span');
            position.classList.add('position');
            position.textContent = `#${index + 1}`;
            listItem.appendChild(position);
            
-           // Nombre del jugador
+           // Player's Name
            const name = document.createElement('span');
            name.classList.add('name');
            name.textContent = score.name;
            listItem.appendChild(name);
            
-           // Puntaje del jugador
+           // Player's Score
            const scoreElement = document.createElement('span');
            scoreElement.classList.add('score');
            scoreElement.textContent = score.score;
@@ -408,17 +410,15 @@ class Game {
    
            gameOverContainer.appendChild(rankingList);
        
-           // Botón para reintentar
+           // Retry button
            const retryButton = document.createElement('button');
            retryButton.classList.add('retry-button');
            retryButton.textContent = 'Reintentar';
            retryButton.addEventListener('click', () => {
-           this.resetGame();
+           this.restartGame();
            });
            gameOverContainer.appendChild(retryButton);
        
-           // Limpiar la pantalla del juego y mostrar el contenedor de Game Over
-           document.body.innerHTML = '';
            document.body.appendChild(gameOverContainer);
 
     }
@@ -482,6 +482,12 @@ class Game {
 
     checkCollisions(pacman, walls, powerpellets, pellets, ghosts) {
 
+        ghosts.forEach(ghost => {
+            if(ghost.x + ghost.size < 0) ghost.vx = 1;
+            if(ghost.x - ghost.size > this.ctx.canvas.width) ghost.vx = -1;
+        })
+      
+
         if(pacman.x + pacman.size < 0) pacman.x = this.ctx.canvas.width;
         if(pacman.x - pacman.size > this.ctx.canvas.width) pacman.x = 0;
         this.checkCollision(pacman, walls);
@@ -495,16 +501,14 @@ class Game {
         ghosts.forEach(ghost => {
             ghost.forbiddenDirections = [];
             walls.forEach(wall => {
-                if (wall.y + wall.size > ghost.y // El borde inferior del objeto está por debajo del borde superior de Pac-Man
-                    && wall.y < ghost.y + ghost.size // El borde superior del objeto está por encima del borde inferior de Pac-Man
-                    && wall.x + wall.size > ghost.x // El borde derecho del objeto está a la derecha del borde izquierdo de Pac-Man
+                if (wall.y + wall.size > ghost.y // The bottom edge of the object is below the top edge of Pac-Man
+                    && wall.y < ghost.y + ghost.size // The top edge of the object is above the bottom edge of Pac-Man
+                    && wall.x + wall.size > ghost.x // The right edge of the object is to the right of the left edge of Pac-Man
                     && ghost.x + ghost.size > wall.x) {
                         ghost.vy = 0;
                         ghost.vx = 0;
                         this.ghostHandleCollisionWithWall(ghost, wall);
                     }
-
-            
 
             })
         })
@@ -517,28 +521,29 @@ class Game {
         const pacmanY = pacman.y;
         for (let i = 0; i < objectsArray.length; i++) {
             const object = objectsArray[i];
-    
-            // Detectar colisión con paredes (Pac-Man cuadrado vs pared cuadrada)
+            // Detect collision with walls (Pac-Man square vs square wall)
             if (object.objectType === 'wall' || object.objectType === 'ghost' || object.objecType === 'powerpellet' || object.objecType === 'pellet') {
-                if (object.y + object.size > pacmanY // El borde inferior del objeto está por debajo del borde superior de Pac-Man
-                    && object.y < pacmanY + pacman.size // El borde superior del objeto está por encima del borde inferior de Pac-Man
-                    && object.x + object.size > pacmanX // El borde derecho del objeto está a la derecha del borde izquierdo de Pac-Man
-                    && pacmanX + pacman.size > object.x) { // El borde izquierdo de Pac-Man está a la izquierda del borde derecho del objeto
+                if (object.y + object.size > pacmanY // The bottom edge of the Pac-Man is below the top edge of the object
+                    && object.y < pacmanY + pacman.size // The top edge of the Pac-Man is above the bottom edge of the object
+                    && object.x + object.size > pacmanX // The right edge of the Pac-Man is to the right of the left edge of the object
+                    && pacmanX + pacman.size > object.x) { // The left edge of the Pac-Man is to the left of the right edge of the object 
                     this.vy = 0;
                     this.vx = 0;
                     if (object.objectType === 'wall') this.handleCollisionWithWall(pacman, object);
                     if (object.objectType === 'ghost') {
-                        this.handleCollisionWithGhost(pacman);
-                        this.loseLife();
+                        this.handleCollisionWithGhost(pacman, object);
+                        this.looseLive();
                     }    
                     if (object.objectType === 'powerpellet') {
 
                         this.score += 10;
                         this.powerPellets = this.powerPellets.filter(p => !(p === object));
+                        this.soundManager.eatPowerPellet.play();
                     }                    
                     if(object.objecType === 'pellet') {
                         this.score += 5;
                         this.pellets = this.pellets.filter(p => !(p === object));
+                        this.soundManager.playEatPelletSound(this.soundOn);
                     }
                     if( this.pellets.length === 0 && this.powerPellets.length === 0) this.nextLevel();
                 }
@@ -548,6 +553,8 @@ class Game {
     }
 
     ghostHandleCollisionWithWall(ghost, wall) {  
+
+        
                
         
             switch (ghost.currentDirection) {
@@ -556,17 +563,17 @@ class Game {
                     break;
         
                 case DOWN:
-                    // Pac-Man se mueve hacia abajo, ajústalo hacia arriba
+                    // Ghost moves down, adjust it up
                     ghost.y = wall.y - ghost.size;
                     break;
         
                 case LEFT:
-                    // Pac-Man se mueve hacia la izquierda, ajústalo hacia la derecha
+                    // Ghost moves to the left, adjust it to the right
                     ghost.x = wall.x + wall.width;
                     break;
         
                 case RIGHT:
-                    // Pac-Man se mueve hacia la derecha, ajústalo hacia la izquierda
+                    // Ghost moves to the right, adjust it to the left
                     ghost.x = wall.x - ghost.size;
                     break;
         
@@ -582,22 +589,22 @@ class Game {
         // Ajustar la posición de Pac-Man basado en la dirección actual
         switch (pacman.currentDirection) {
             case UP:
-                // Pac-Man se mueve hacia arriba, ajústalo hacia abajo
+                // Pac-Man moves up, adjust it down
                 pacman.y = wall.y + wall.height;
                 break;
     
             case DOWN:
-                // Pac-Man se mueve hacia abajo, ajústalo hacia arriba
+                // Pac-Man moves down, adjust it up
                 pacman.y = wall.y - pacman.size;
                 break;
     
             case LEFT:
-                // Pac-Man se mueve hacia la izquierda, ajústalo hacia la derecha
+                // Pac-Man moves to the left, adjust it to the right
                 pacman.x = wall.x + wall.width;
                 break;
     
             case RIGHT:
-                // Pac-Man se mueve hacia la derecha, ajústalo hacia la izquierda
+                // Pac-Man moves to the right, adjust it to the left
                 pacman.x = wall.x - pacman.size;
                 break;
     
@@ -606,29 +613,32 @@ class Game {
         }
     }  
         
-    handleCollisionWithGhost(pacman) {
-        // Reiniciar la posición de Pac-Man
+    handleCollisionWithGhost(pacman, collideGhost) {
+        // Reset the Pac-Man's position
         this.pacman = new Pacman(this.ctx);
-        
-        // Reiniciar todos los fantasmas
+
+        // Reset the position of the ghost involved in the collision
         this.ghosts = this.ghosts.map(ghost => {
-            switch (ghost.name) {
-                case 'blinky':
-                    return new Blinky(this.ctx);
-                case 'pinky':
-                    return new Pinky(this.ctx);
-                case 'inky':
-                    return new Inky(this.ctx);
-                case 'clyde':
-                    return new Clyde(this.ctx);
-                default:
-                    return ghost;
+            if (ghost === collideGhost) {
+                switch (ghost.name) {
+                    case 'blinky':
+                        return new Blinky(this.ctx);
+                    case 'pinky':
+                        return new Pinky(this.ctx);
+                    case 'inky':
+                        return new Inky(this.ctx);
+                    case 'clyde':
+                        return new Clyde(this.ctx);
+                    default:
+                        return ghost;
+                }
             }
+            return ghost; 
         });
     }
 
     initializeLives() {
-        // Crear el contenedor de vidas
+        // Create the lives container if it doesn't exist
         let livesContainer = document.getElementById('livesContainer');
         if (!livesContainer) {
             livesContainer = document.createElement('div');
@@ -636,21 +646,21 @@ class Game {
             livesContainer.style.display = 'flex';
             livesContainer.style.justifyContent = 'center';
             livesContainer.style.marginBottom = '20px';
-           // Añadir el contenedor de vidas al comienzo del game-container
+            // Add the lives container at the start of the game-container
             const gameContainer = document.querySelector('.title-container');
             if (gameContainer) {
                 gameContainer.appendChild(livesContainer);
             } 
         }
 
-        // Limpiar cualquier corazón existente
+        // Clean everything in the lives container
         livesContainer.innerHTML = '';
 
-        // Añadir corazones según la cantidad de vidas
+        // Add hearts based on the current lives
         for (let i = 0; i < this.lives; i++) {
             const heart = document.createElement('span');
             heart.className = 'life-heart';
-            heart.innerHTML = '❤️'; // Puedes usar un icono de corazón o una imagen
+            heart.innerHTML = '❤️'; // You can use any character you want to represent a heart
             heart.style.fontSize = '24px';
             heart.style.margin = '0 5px';
             livesContainer.appendChild(heart);

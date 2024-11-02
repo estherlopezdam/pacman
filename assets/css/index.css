@@ -100,8 +100,7 @@ body {
   animation: twinkling 3s infinite ease-in-out;
 }
 
-.game-title {
-  
+.game-title {  
   text-align: center;
   font-family: 'Press Start 2P', cursive;
   color: #FFD700; /* Color dorado */
@@ -122,6 +121,10 @@ body {
 }
 
 .game-over-container {
+ 
+  margin-top: 100px; /* Añadir un margen superior para evitar que se superponga con el título */
+  text-align: center;
+  position: relative;
   text-align: center;
   background: #0f3460;
   padding: 30px;

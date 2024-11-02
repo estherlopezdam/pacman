@@ -3,7 +3,7 @@ class Pellet {
       this.ctx = ctx;
       this.x = x;
       this.y = y;
-      this.color = '#FFD700';  // Color dorado para los pellets
+      this.color = '#FFD700';  // Gold color for the pellets
       this.objecType = 'pellet';
       this.size = 6;
       this.image = new Image();
@@ -22,14 +22,14 @@ class Pellet {
       // this.ctx.closePath();
     }
   
-    // Método estático para crear todos los pellets
+    // Specific method to create pellets
     static createPellets(ctx, pellet_positions) {
       const pellets = [];
-      const size = 20;  // Tamaño de la cuadrícula
+      const size = 20;  // Size of the grid
   
       for (let i = 0; i < pellet_positions.length; i++) {
         const position = pellet_positions[i];
-        const x = position[0] * size + size / 2;  // Ajustar la posición para centrar el pellet
+        const x = position[0] * size + size / 2;  // Adjust the position to center the pellet in the grid 
         const y = position[1] * size + size / 2;
         const newPellet = new Pellet(ctx, x, y);
         pellets.push(newPellet);

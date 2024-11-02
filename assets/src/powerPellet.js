@@ -1,7 +1,7 @@
 class PowerPellet extends Pellet {
     constructor(ctx, x, y) {
-        // Llamamos al constructor de Pellet, pero con un radio mayor
-        super(ctx, x, y, 7); // Radio más grande, ajustable
+        // We call the constructor of the parent class (Pellet) first, but with a bigger radius
+        super(ctx, x, y, 7); // Bigger radius, adjustable 
         this.color = 'lightyellow';
         this.objectType = "powerpellet";
         this.size = 20;
@@ -11,12 +11,12 @@ class PowerPellet extends Pellet {
 
     static createPellets(ctx, powerPellet_positions) {
         const powerPellets = [];
-        const size = 20;  // Tamaño de la cuadrícula
+        const size = 20;  // Size of the power pellet
     
         for (let i = 0; i < powerPellet_positions.length; i++) {
           const position = powerPellet_positions[i];
-          const x = position[0] * size ;  // Ajustar la posición para centrar el pellet
-          const y = position[1] * size ;
+          const x = position[0] * size ;  // Adjuste the position to center the pellet
+          const y = position[1] * size ;    
           const newPellet = new PowerPellet(ctx, x, y);
           powerPellets.push(newPellet);
         }

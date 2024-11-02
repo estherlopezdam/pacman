@@ -11,15 +11,14 @@ const GHOST_LEFT = 65;
 const GHOST_RIGHT = 68;
 const GHOST_DOWN = 83;
 
-//posiciones de las dos casillas donde puedes entrar por un lado y salir por el otro
+// positions os the two boxes where you can enter from one side and exit from the other
 const n_positions = [
     [0, 14], [27, 14]
 ];
 
 
 
-//coordenadas de las dos posiciones donde puede crearse pacman
-
+// coordinates of the two positions where you can create pacman
 const p_positions = [
     [13, 23],
 ];

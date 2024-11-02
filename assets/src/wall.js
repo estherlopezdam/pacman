@@ -20,12 +20,12 @@ class Wall {
 
     static createWalls(ctx, wall_positions) {
         const walls = [];
-        const size = 20;  // Tamaño de cada bloque (ancho y alto de las paredes)
+        const size = 20;  // Size of each block (height and width)
     
         for (let i = 0; i < wall_positions.length; i++) {
             const wall = wall_positions[i];
-            const newWall = new Wall(ctx, wall[0] * size, wall[1] * size); // Multiplicamos por el tamaño
-            walls.push(newWall);
+            const newWall = new Wall(ctx, wall[0] * size, wall[1] * size); // We multiply by the size
+            walls.push(newWall); 
         }
     
         return walls;
