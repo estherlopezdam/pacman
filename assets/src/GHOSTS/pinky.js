@@ -1,7 +1,7 @@
 class Pinky extends Ghost {
-    constructor() {
+    constructor(ctx, level) {
         const [name, position, color, releaseTime] = ghost_positions.P;
-        super(ctx, name, position, color, releaseTime);
+        super(ctx, level, name, position, color, releaseTime);
         
         this.image.src = 'assets/img/pinky/stop.png';
         

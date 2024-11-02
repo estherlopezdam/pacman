@@ -1,10 +1,12 @@
 class Ghost {
-    constructor(ctx, name,startPosition, color, releaseTime) {
-        this.ctx = ctx
+    constructor(ctx, level, name,startPosition, color, releaseTime) {
+        this.ctx = ctx;
+        this.level = level;
+        this.incrementFactor = 0.02;
         this.name = name;
         this.color = color;
         this.position = startPosition; // [x, y]
-        this.releaseTime = releaseTime;
+        this.releaseTime = releaseTime - ((this.level - 1) * this.incrementFactor);
         this.objectType = 'ghost';
         this.size = 20;
         this.tick = 0;  
@@ -16,6 +18,7 @@ class Ghost {
         this.currentGhost = null;
         this.forbiddenDirections = [];
         this.image = new Image();
+        this.edibleCounter = 0;
         
 
         //this.level = level;  // Ghost level
@@ -30,28 +33,38 @@ class Ghost {
 }
 
 // Method for drawing the ghost
-draw() {
-    this.resetImage();
-    this.ctx.drawImage(this.image, this.x, this.y, 20, 20);
+draw(powerPelletActive) {
+    
+    if(powerPelletActive) {
+        this.edibleCounter++;
+        if(this.edibleCounter < 8000) this.resetImage('blue');
+        else this.resetImage('white');
+
+    } else {
+        this.resetImage(this.name);
+        this.ctx.drawImage(this.image, this.x, this.y, 20, 20);
+    }
+   
+    
     
     
 }
-resetImage() {
+resetImage(name) {
     switch (this.currentDirection) {
         case UP:
-            this.image.src = `assets/img/${this.name}/UP.png`;          
+            this.image.src = `assets/img/${name}/UP.png`;          
             
             break;
         case DOWN:
-            this.image.src = `assets/img/${this.name}/DOWN.png`;          
+            this.image.src = `assets/img/${name}/DOWN.png`;          
             
             break;
         case LEFT:
-            this.image.src = `assets/img/${this.name}/LEFT.png`;          
+            this.image.src = `assets/img/${name}/LEFT.png`;          
             
             break;
         case RIGHT:
-            this.image.src = `assets/img/${this.name}/RIGHT.png`;          
+            this.image.src = `assets/img/${name}/RIGHT.png`;          
             
             break;
     

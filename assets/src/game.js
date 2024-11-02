@@ -9,9 +9,9 @@ class Game {
         this.bestScore = localStorage.getItem('bestScore') || 0;
         this.playerName = localStorage.getItem('playerName') || 'Player';
         this.lives = 0;
-        this.rankings = [];
-        
+        this.rankings = [];        
         this.soundOn = true;
+        this.powerPelletActive = false;
 
         
         this.pacman = new Pacman(this.ctx);     
@@ -181,10 +181,10 @@ class Game {
     }
 
     initGhost() {
-        const blinky = new Blinky(this.ctx);
-        const pinky = new Pinky(this.ctx);
-        const inky = new Inky(this.ctx);
-        const clyde = new Clyde(this.ctx);
+        const blinky = new Blinky(this.ctx, this.level);
+        const pinky = new Pinky(this.ctx, this.level);
+        const inky = new Inky(this.ctx, this.level);
+        const clyde = new Clyde(this.ctx, this.level);
         this.ghosts.push(blinky);
         this.ghosts.push(pinky);
         this.ghosts.push(inky);
@@ -432,8 +432,9 @@ class Game {
         this.pacman.draw();
         
         this.ghosts.forEach(ghost => {
+            if(ghost.edibleCounter >= 10000) this.powerPelletActive = false;
            
-            ghost.draw()});
+            ghost.draw(this.powerPelletActive)});
     }
     
 
@@ -535,8 +536,8 @@ class Game {
                         this.looseLive();
                     }    
                     if (object.objectType === 'powerpellet') {
-
                         this.score += 10;
+                        this.powerPelletActive = true;
                         this.powerPellets = this.powerPellets.filter(p => !(p === object));
                         this.soundManager.eatPowerPellet.play();
                     }                    

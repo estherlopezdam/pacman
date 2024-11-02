@@ -1,7 +1,7 @@
 class Clyde extends Ghost {
-    constructor() {
+    constructor(ctx, level) {
         const [name, position, color, releaseTime] = ghost_positions.C;
-        super(ctx, name, position, color, releaseTime);
+        super(ctx, level, name, position, color, releaseTime);
         this.vy = 0;
         this.vx = 0;
         this.image.src = 'assets/img/clyde/stop.png';
