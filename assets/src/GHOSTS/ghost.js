@@ -29,19 +29,11 @@ class Ghost {
         this.vy = 0;  // Speed in the Y axis
 }
 
-// // Method to update the movement of the ghost
-// updatePosition() {
-//  // Here we can set the vx and vy speed depending on the direction of the movement
-//     this.x += this.vx;
-//     this.y += this.vy;
-// }
-
 // Method for drawing the ghost
 draw() {
     this.resetImage();
     this.ctx.drawImage(this.image, this.x, this.y, 20, 20);
-    // this.ctx.fillStyle = this.color;
-    // this.ctx.fillRect(this.x , this.y, 20, 20);  // Dibuja un cuadrado
+    
     
 }
 resetImage() {

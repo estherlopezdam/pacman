@@ -6,7 +6,7 @@ class PowerPellet extends Pellet {
         this.objectType = "powerpellet";
         this.size = 20;
         this.image = new Image();
-        this.image.src = '/assets/img/powerPellet.png';
+        this.image.src = 'assets/img/powerPellet.png';
     }
 
     static createPellets(ctx, powerPellet_positions) {

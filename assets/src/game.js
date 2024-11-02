@@ -8,7 +8,7 @@ class Game {
         this.score = 0;     
         this.bestScore = localStorage.getItem('bestScore') || 0;
         this.playerName = localStorage.getItem('playerName') || 'Player';
-        this.lives = 3;
+        this.lives = 0;
         this.rankings = [];
         
         this.soundOn = true;
@@ -39,7 +39,7 @@ class Game {
         loadingScreen.style.left = '0';
         loadingScreen.style.width = '100%';
         loadingScreen.style.height = '100%';
-        loadingScreen.style.background = "url('/assets/img/loading-background.png') no-repeat center center fixed";
+        loadingScreen.style.background = "url('assets/img/loading-background.png') no-repeat center center fixed";
         loadingScreen.style.backgroundSize = 'cover';
         loadingScreen.style.display = 'flex';
         loadingScreen.style.justifyContent = 'center';
@@ -339,7 +339,7 @@ class Game {
        this.rankings.sort((a, b) => b.score - a.score);
 
         // Keep the top 10 scores if necessary
-        if (this.rankings.length > 10) this.rankings.pop();
+        if (this.rankings.length > 5) this.rankings.pop();
 
         // Save the updated ranking to localStorage
         localStorage.setItem('rankings', JSON.stringify(this.rankings));
@@ -358,7 +358,6 @@ class Game {
         }
         const gameOverContainer = document.createElement('div');
         gameOverContainer.classList.add('game-over-container');
-        gameOverContainer.style.marginTop = '120px';  // Asegúrate de que no se superponga con el título
         gameOverContainer.style.textAlign = 'center';
     
         // Game Over Title
@@ -370,7 +369,7 @@ class Game {
         // Ranking Title
         const rankingTitle = document.createElement('h2');
         rankingTitle.classList.add('ranking-title');
-        rankingTitle.textContent = 'Ranking Top 10';
+        rankingTitle.textContent = 'Ranking Top Five';
         gameOverContainer.appendChild(rankingTitle);
     
         // Ranking list
@@ -383,7 +382,7 @@ class Game {
          // Supposing that the scores are stored in `this.highScores`
          this.rankings
          .sort((a, b) => b.score - a.score)
-         .slice(0, 10)
+         .slice(0, 5)
          .forEach((score, index) => {
            const listItem = document.createElement('li');
            
@@ -418,8 +417,9 @@ class Game {
            this.restartGame();
            });
            gameOverContainer.appendChild(retryButton);
+           const flexContainer = document.getElementById("title-container");
        
-           document.body.appendChild(gameOverContainer);
+           flexContainer.appendChild(gameOverContainer);
 
     }
 

@@ -7,7 +7,7 @@ class Pellet {
       this.objecType = 'pellet';
       this.size = 6;
       this.image = new Image();
-      this.image.src = '/assets/img/pellet.png';
+      this.image.src = 'assets/img/pellet.png';
       
     }
   
