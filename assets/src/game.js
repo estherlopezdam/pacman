@@ -502,13 +502,14 @@ class Game {
                     if (object.objectType === 'wall') this.handleCollisionWithWall(pacman, object);
                     if (object.objectType === 'ghost') {
                         this.handleCollisionWithGhost(object);
-                        if(this.powerPelletActive){object.releaseTime += 2000}
-                        else {this.looseLive()};
+                        if(this.powerPelletActive){
+                            object.releaseTime += 2000;
+                            this.score += 100;
+                        } else {this.looseLive()};
                     }    
                     if (object.objectType === 'powerpellet') {
                         this.score += 10;
                         this.powerPelletActive = true;
-                        console.log('Power Pellet avtivasted:', this.powerPelletActive)
                         setTimeout(() => {
                             this.powerPelletActive = false;          
                         }, 10000);
