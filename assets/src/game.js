@@ -2,16 +2,15 @@ class Game {
     constructor(ctx) {
         this.ctx = ctx;
         this.intervalID = null;
-        this.level = 1;
+        this.level = 1;        
+        this.powerPelletActive = false;
         this.currentGhost = null;
-        this.stars = [];
         this.score = 0;     
         this.bestScore = localStorage.getItem('bestScore') || 0;
         this.playerName = localStorage.getItem('playerName') || 'Player';
-        this.lives = 0;
+        this.lives = 3;
         this.rankings = [];        
         this.soundOn = true;
-        this.powerPelletActive = false;
 
         
         this.pacman = new Pacman(this.ctx);     
@@ -34,23 +33,15 @@ class Game {
         // Create the loading screen container
         const loadingScreen = document.createElement('div');
         loadingScreen.id = 'loadingScreen';
-        loadingScreen.style.position = 'fixed';
-        loadingScreen.style.top = '0';
-        loadingScreen.style.left = '0';
-        loadingScreen.style.width = '100%';
-        loadingScreen.style.height = '100%';
         loadingScreen.style.background = "url('assets/img/loading-background.png') no-repeat center center fixed";
         loadingScreen.style.backgroundSize = 'cover';
-        loadingScreen.style.display = 'flex';
-        loadingScreen.style.justifyContent = 'center';
-        loadingScreen.style.alignItems = 'center';
+        loadingScreen.classList.add('loading-screen');
+    
 
         // Content of the loadingScreen
         const loadingContent = document.createElement('div');
-        loadingContent.style.textAlign = 'center';
-        loadingContent.style.background = 'rgba(0, 0, 0, 0.7)';
-        loadingContent.style.padding = '30px';
-        loadingContent.style.borderRadius = '15px';
+        loadingContent.classList.add('loading-content');
+       
 
         // Title
         const title = document.createElement('h1');
@@ -64,10 +55,7 @@ class Game {
         nameInput.type = 'text';
         nameInput.id = 'playerName';
         nameInput.placeholder = 'Enter your name';
-        nameInput.style.fontFamily = 'Press Start 2P, cursive';
-        nameInput.style.padding = '10px';
-        nameInput.style.marginBottom = '20px';
-        nameInput.style.width = '80%';
+        nameInput.classList.add('name-input');
         loadingContent.appendChild(nameInput);
 
         // Botones
@@ -77,13 +65,7 @@ class Game {
         const startButton = document.createElement('button');
         startButton.id = 'startGameButton';
         startButton.textContent = 'Start Game';
-        startButton.style.margin = '10px';
-        startButton.style.padding = '10px 20px';
-        startButton.style.fontFamily = 'Press Start 2P, cursive';
-        startButton.style.backgroundColor = '#4CAF50';
-        startButton.style.color = '#ffffff';
-        startButton.style.border = 'none';
-        startButton.style.cursor = 'pointer';
+        startButton.classList.add('start-button');
         startButton.addEventListener('click', () => this.startGame(nameInput.value));
         buttonsDiv.appendChild(startButton);
 
@@ -91,13 +73,7 @@ class Game {
         const soundButton = document.createElement('button');
         soundButton.id = 'toggleSoundButton';
         soundButton.textContent = 'Sound: ON';
-        soundButton.style.margin = '10px';
-        soundButton.style.padding = '10px 20px';
-        soundButton.style.fontFamily = 'Press Start 2P, cursive';
-        soundButton.style.backgroundColor = '#4CAF50';
-        soundButton.style.color = '#ffffff';
-        soundButton.style.border = 'none';
-        soundButton.style.cursor = 'pointer';
+        soundButton.classList.add('sound-button');
         soundButton.addEventListener('click', () => this.tooggleSound(soundButton));
         buttonsDiv.appendChild(soundButton);
 
@@ -105,13 +81,7 @@ class Game {
         const controlsButton = document.createElement('button');
         controlsButton.id = 'controlsButton';
         controlsButton.textContent = 'Controls';
-        controlsButton.style.margin = '10px';
-        controlsButton.style.padding = '10px 20px';
-        controlsButton.style.fontFamily = 'Press Start 2P, cursive';
-        controlsButton.style.backgroundColor = '#4CAF50';
-        controlsButton.style.color = '#ffffff';
-        controlsButton.style.border = 'none';
-        controlsButton.style.cursor = 'pointer';
+        controlsButton.classList.add('controls-button');
         controlsButton.addEventListener('click', () => this.showControls());
         buttonsDiv.appendChild(controlsButton);
 
@@ -142,15 +112,16 @@ class Game {
         let canvas = document.getElementById('pacmanCanvas');
         if (canvas) {
             canvas.style.display = 'block';
-        } else {
-            // Si el canvas no existe, crearlo
-            canvas = document.createElement('canvas');
-            canvas.id = 'pacmanCanvas';
-            canvas.width = 800;
-            canvas.height = 600;
-            document.body.appendChild(canvas);
-            this.ctx = canvas.getContext('2d');
         }
+        // } else {
+        //     // Si el canvas no existe, crearlo
+        //     canvas = document.createElement('canvas');
+        //     canvas.id = 'pacmanCanvas';
+        //     canvas.width = 560;
+        //     canvas.height = 620;
+        //     document.body.appendChild(canvas);
+        //     this.ctx = canvas.getContext('2d');
+        // }
     
         // Iniciar el juego
         const scoreContainer = document.getElementById('scoreContainer');
@@ -224,15 +195,15 @@ class Game {
         this.walls = [];
     
         // Limpiar canvas y recrearlo
-        let canvas = document.getElementById('pacmanCanvas');
-        if (!canvas) {
-            canvas = document.createElement('canvas');
-            canvas.id = 'pacmanCanvas';
-            canvas.width = 800; // Ajusta el tamaño según el juego
-            canvas.height = 600;
-            document.body.appendChild(canvas);
-        }
-        this.ctx = canvas.getContext('2d');
+        // let canvas = document.getElementById('pacmanCanvas');
+        // if (!canvas) {
+        //     canvas = document.createElement('canvas');
+        //     canvas.id = 'pacmanCanvas';
+        //     canvas.width = 560; // Ajusta el tamaño según el juego
+        //     canvas.height = 620;
+        //     document.body.appendChild(canvas);
+        // }
+        // this.ctx = canvas.getContext('2d');
     
         // Iniciar el juego
         this.startGame(this.playerName);
@@ -242,7 +213,7 @@ class Game {
         if (this.powerPellets.length === 0 && this.pellets.length === 0) {
             this.level++;
             this.pacman = new Pacman(this.ctx);
-            this.startGame();
+            this.startGame(this.playerName);
         }
     }   
     
@@ -431,9 +402,7 @@ class Game {
         this.powerPellets.forEach(powerPellet => powerPellet.draw());
         this.pacman.draw();
         
-        this.ghosts.forEach(ghost => {
-            if(ghost.edibleCounter >= 10000) this.powerPelletActive = false;
-           
+        this.ghosts.forEach(ghost => {           
             ghost.draw(this.powerPelletActive)});
     }
     
@@ -441,7 +410,7 @@ class Game {
 
     move() {
         this.pacman.move();
-        this.ghosts.forEach(ghost => ghost.move(this.pacman));
+        this.ghosts.forEach(ghost => ghost.move(this.pacman, this.powerPelletActive));
 
     }
 
@@ -523,7 +492,7 @@ class Game {
         for (let i = 0; i < objectsArray.length; i++) {
             const object = objectsArray[i];
             // Detect collision with walls (Pac-Man square vs square wall)
-            if (object.objectType === 'wall' || object.objectType === 'ghost' || object.objecType === 'powerpellet' || object.objecType === 'pellet') {
+            if (object.objectType === 'wall' || object.objectType === 'ghost' || object.objectType === 'powerpellet' || object.objectType === 'pellet') {
                 if (object.y + object.size > pacmanY // The bottom edge of the Pac-Man is below the top edge of the object
                     && object.y < pacmanY + pacman.size // The top edge of the Pac-Man is above the bottom edge of the object
                     && object.x + object.size > pacmanX // The right edge of the Pac-Man is to the right of the left edge of the object
@@ -532,16 +501,21 @@ class Game {
                     this.vx = 0;
                     if (object.objectType === 'wall') this.handleCollisionWithWall(pacman, object);
                     if (object.objectType === 'ghost') {
-                        this.handleCollisionWithGhost(pacman, object);
-                        this.looseLive();
+                        this.handleCollisionWithGhost(object);
+                        if(this.powerPelletActive){object.releaseTime += 2000}
+                        else {this.looseLive()};
                     }    
                     if (object.objectType === 'powerpellet') {
                         this.score += 10;
                         this.powerPelletActive = true;
+                        console.log('Power Pellet avtivasted:', this.powerPelletActive)
+                        setTimeout(() => {
+                            this.powerPelletActive = false;          
+                        }, 10000);
                         this.powerPellets = this.powerPellets.filter(p => !(p === object));
                         this.soundManager.eatPowerPellet.play();
                     }                    
-                    if(object.objecType === 'pellet') {
+                    if(object.objectType === 'pellet') {
                         this.score += 5;
                         this.pellets = this.pellets.filter(p => !(p === object));
                         this.soundManager.playEatPelletSound(this.soundOn);
@@ -614,9 +588,13 @@ class Game {
         }
     }  
         
-    handleCollisionWithGhost(pacman, collideGhost) {
-        // Reset the Pac-Man's position
+    handleCollisionWithGhost(collideGhost) {
+
+        if(!this.powerPelletActive) {
+              // Reset the Pac-Man's position
         this.pacman = new Pacman(this.ctx);
+
+        }
 
         // Reset the position of the ghost involved in the collision
         this.ghosts = this.ghosts.map(ghost => {
@@ -644,9 +622,7 @@ class Game {
         if (!livesContainer) {
             livesContainer = document.createElement('div');
             livesContainer.id = 'livesContainer';
-            livesContainer.style.display = 'flex';
-            livesContainer.style.justifyContent = 'center';
-            livesContainer.style.marginBottom = '20px';
+            livesContainer.classList.add('lives-container');         
             // Add the lives container at the start of the game-container
             const gameContainer = document.querySelector('.title-container');
             if (gameContainer) {

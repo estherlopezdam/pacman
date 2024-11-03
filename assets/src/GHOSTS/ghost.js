@@ -18,7 +18,8 @@ class Ghost {
         this.currentGhost = null;
         this.forbiddenDirections = [];
         this.image = new Image();
-        this.edibleCounter = 0;
+        this.currentDirection = UP;
+        this.name2 = 'blue';
         
 
         //this.level = level;  // Ghost level
@@ -34,22 +35,28 @@ class Ghost {
 
 // Method for drawing the ghost
 draw(powerPelletActive) {
-    
     if(powerPelletActive) {
-        this.edibleCounter++;
-        if(this.edibleCounter < 8000) this.resetImage('blue');
-        else this.resetImage('white');
+
+        setTimeout(() => {
+            this.name2 = 'white';          
+        }, 7000);
+        this.resetImage(this.name2);
+
+       
+        
 
     } else {
         this.resetImage(this.name);
-        this.ctx.drawImage(this.image, this.x, this.y, 20, 20);
     }
+    this.ctx.drawImage(this.image, this.x, this.y, 20, 20);
    
     
     
     
 }
 resetImage(name) {
+    
+    
     switch (this.currentDirection) {
         case UP:
             this.image.src = `assets/img/${name}/UP.png`;          
@@ -74,7 +81,7 @@ resetImage(name) {
 }
 
 
-move(pacman) {
+move(pacman, powerPelletActive) {
     this.x += this.vx;
     this.y += this.vy;     
 
@@ -132,7 +139,7 @@ move(pacman) {
                 this.lastChangeX = puntoClaveX;
                 this.lastChangeY = puntoClaveY;
                 
-                this.changeDirection(pacman);
+                this.changeDirection(pacman, powerPelletActive);
                 this.canChangeDirection = false;
             }
     }
@@ -181,8 +188,10 @@ onKeyDown(e) {
         }
     }
     
-    changeDirection(pacman) {
-        // Calculate the distances in the X and Y axes between Pac-Man and the ghost
+    changeDirection(pacman, powerPelletActive) {
+
+        if(!powerPelletActive) {
+             // Calculate the distances in the X and Y axes between Pac-Man and the ghost
         const distanceX = Math.abs(pacman.x - this.x);
         const distanceY = Math.abs(pacman.y - this.y);
 
@@ -216,6 +225,45 @@ onKeyDown(e) {
                 this.currentDirection = UP;
             }
         }
+
+        } else {
+             // Calculate the distances in the X and Y axes between Pac-Man and the ghost
+        const distanceX = Math.abs(pacman.x - this.x);
+        const distanceY = Math.abs(pacman.y - this.y);
+
+        // Evaluate the less distance to decide the direction to follow
+        if (distanceX > distanceY && (!this.forbiddenDirections.includes(RIGHT) && !this.forbiddenDirections.includes(LEFT)) ) {
+            // If the distance in X is greater, choose to move in the X axis
+            if (pacman.x > this.x) {
+                // Pac-Man is in the right
+                this.vx = -1;
+                this.vy = 0;
+                this.currentDirection = LEFT;
+            } else {
+                // Pac-Man is in the left
+                this.vx = 1;
+                this.vy = 0;
+                this.currentDirection = RIGHT;
+            }
+        } else {
+            // If the distance in Y is greater or equal, choose to move in the Y axis
+            if (pacman.y > this.y && !this.forbiddenDirections.includes(DOWN)) {
+                // Pac-Man is below
+                this.vx = 0;
+                this.vy = -1;
+                this.currentDirection = UP;
+                
+
+            } else {
+                // Pac-Man is above
+                this.vx = 0;
+                this.vy = 1;
+                this.currentDirection = DOWN;
+            }
+        }
+
+        }
+       
     }
 
 }

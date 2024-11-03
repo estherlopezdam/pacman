@@ -218,3 +218,64 @@ body {
     padding: 12px 25px;
   }
 }
+
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-content {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 30px;
+  border-radius: 15px;
+}
+
+.name-input {
+  font-family: 'Press Start 2P', cursive;
+  padding: 10px;
+  margin-bottom: 20px;
+  width: 80%;
+}
+
+.start-button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', cursive;
+  background-color: #4CAF50;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+}
+
+.sound-button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', cursive;
+  background-color: #4CAF50;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+}
+
+.controls-button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', cursive;
+  background-color: #4CAF50;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+}
+
+.lives-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}

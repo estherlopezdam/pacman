@@ -4,7 +4,7 @@ class Pellet {
       this.x = x;
       this.y = y;
       this.color = '#FFD700';  // Gold color for the pellets
-      this.objecType = 'pellet';
+      this.objectType = 'pellet';
       this.size = 6;
       this.image = new Image();
       this.image.src = 'assets/img/pellet.png';
