@@ -265,9 +265,7 @@ onKeyDown(e) {
         }
        
     }
-    changes() {
-        
-    }
+   
 
 }
 
