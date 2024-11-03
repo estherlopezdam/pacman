@@ -44,7 +44,7 @@ The project is still under development. The ghosts have some errors in the AI lo
 
 Acknowledgements
 
-Thanks to my teachers Carlos, Julio, Cristian, and Pool for supporting me on this adventure.
+Thanks to my teachers ❤️❤️ Carlos, Julio, Cristian, and Pool for supporting me on this adventure.
 
 
 *************************************************************************************************************************************************************************************************************************************************************************
