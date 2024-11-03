@@ -21,5 +21,8 @@ class Blinky extends Ghost {
     onKeyDown(e) {
         super.onKeyDown(e);
     }
+    changes() {
+        
+    }
 }
 
