@@ -601,13 +601,13 @@ class Game {
             if (ghost === collideGhost) {
                 switch (ghost.name) {
                     case 'blinky':
-                        return new Blinky(this.ctx);
+                        return new Blinky(this.ctx, this.level);
                     case 'pinky':
-                        return new Pinky(this.ctx);
+                        return new Pinky(this.ctx, this.level);
                     case 'inky':
-                        return new Inky(this.ctx);
+                        return new Inky(this.ctx, this.level);
                     case 'clyde':
-                        return new Clyde(this.ctx);
+                        return new Clyde(this.ctx, this.level);
                     default:
                         return ghost;
                 }

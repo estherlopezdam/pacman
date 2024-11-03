@@ -236,12 +236,12 @@ onKeyDown(e) {
             // If the distance in X is greater, choose to move in the X axis
             if (pacman.x > this.x) {
                 // Pac-Man is in the right
-                this.vx = -1;
+                this.vx = -0.5;
                 this.vy = 0;
                 this.currentDirection = LEFT;
             } else {
                 // Pac-Man is in the left
-                this.vx = 1;
+                this.vx = 0.5;
                 this.vy = 0;
                 this.currentDirection = RIGHT;
             }
@@ -250,14 +250,14 @@ onKeyDown(e) {
             if (pacman.y > this.y && !this.forbiddenDirections.includes(DOWN)) {
                 // Pac-Man is below
                 this.vx = 0;
-                this.vy = -1;
+                this.vy = -0.5;
                 this.currentDirection = UP;
                 
 
             } else {
                 // Pac-Man is above
                 this.vx = 0;
-                this.vy = 1;
+                this.vy = 0.5;
                 this.currentDirection = DOWN;
             }
         }
