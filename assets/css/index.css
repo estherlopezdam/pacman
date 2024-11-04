@@ -279,3 +279,32 @@ body {
   justify-content: center;
   margin-bottom: 20px;
 }
+.modal {
+  display: none; /* Por defecto oculto */
+  position: fixed;
+  z-index: 1; /* Encima de otros elementos */
+  left: 0;
+  top: 0;
+  width: 100%; /* Toma toda la pantalla */
+  height: 100%; /* Toma toda la pantalla */
+  background-color: rgba(0, 0, 0, 0.7); /* Color negro con transparencia */
+}
+.modal-content {
+  position: relative;
+  margin: 15% auto; /* Centrar verticalmente */
+  padding: 20px;
+  width: 50%; /* Puedes ajustar el ancho según necesites */
+  max-width: 600px; /* Ancho máximo de la imagen */
+  background-color: #fff; /* Fondo blanco */
+  text-align: center;
+  border-radius: 8px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}

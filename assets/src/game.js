@@ -138,8 +138,95 @@ class Game {
     }
 
     showControls() {
-        alert('Use arrow keys to move Pac-Man. Avoid ghosts and collect all pellets!');
+        // Primero, ocultar la pantalla de carga si todavía está visible
+        const loadingScreen = document.getElementById('loadingScreen');
+        if (loadingScreen && loadingScreen.style.display !== 'none') {
+            loadingScreen.style.display = 'none';
+        }
+    
+        // Verificar si ya existe un modal previo para evitar duplicados
+        let existingModal = document.getElementById('controlsModal');
+        if (existingModal) {
+            document.body.removeChild(existingModal);
+        }
+    
+        // Crear el contenedor del modal
+        const modal = document.createElement('div');
+        modal.id = 'controlsModal';
+        modal.className = 'modal';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        modal.style.display = 'flex';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.style.zIndex = 1000; // Colocar un valor alto para garantizar visibilidad
+    
+        // Crear el contenido del modal
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+        modalContent.style.backgroundColor = '#fff';
+        modalContent.style.padding = '20px';
+        modalContent.style.borderRadius = '10px';
+        modalContent.style.position = 'relative';
+        modalContent.style.maxWidth = '600px';
+        modalContent.style.width = '80%';
+        modalContent.style.textAlign = 'center';
+    
+        // Crear el botón de cerrar
+        const closeButton = document.createElement('span');
+        closeButton.className = 'close-button';
+        closeButton.innerHTML = '&times;';
+        closeButton.style.position = 'absolute';
+        closeButton.style.top = '10px';
+        closeButton.style.right = '20px';
+        closeButton.style.fontSize = '28px';
+        closeButton.style.cursor = 'pointer';
+    
+        // Mantener el contexto de "this" usando una función de flecha
+        closeButton.onclick = () => {
+            // Llamar al método para recrear la pantalla de carga
+            this.createLoadingScreen();
+            // Eliminar el modal del DOM
+            document.body.removeChild(modal);
+        };
+    
+        // Crear la imagen de los controles
+        const controlsImage = document.createElement('img');
+        controlsImage.src = 'assets/img/controls.png'; // Cambia esto por la ruta correcta de tu imagen
+        controlsImage.alt = 'Controles Pac-Man';
+        controlsImage.style.width = '100%';
+        controlsImage.style.height = 'auto';
+        controlsImage.style.marginTop = '20px';
+    
+        // Añadir los elementos creados al modal
+        modalContent.appendChild(closeButton);
+        modalContent.appendChild(controlsImage);
+        modal.appendChild(modalContent);
+    
+        // Añadir el modal al cuerpo del documento
+        document.body.appendChild(modal);
+    
+        // Añadir evento para cerrar el modal cuando se hace clic fuera del contenido
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                // Llamar al método para recrear la pantalla de carga
+                this.createLoadingScreen();
+                // Eliminar el modal del DOM
+                document.body.removeChild(modal);
+            }
+        };
     }
+    
+    
+    
+
+    // showControls() {
+    //     alert('Use arrow keys to move Pac-Man. Avoid ghosts and collect all pellets!');
+    // }
    
     initWalls(wall_position) {
         this.walls = Wall.createWalls(this.ctx, wall_position);

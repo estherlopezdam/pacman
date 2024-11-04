@@ -11,7 +11,6 @@ class Pacman {
     this.image = new Image();
     this.image.src = 'assets/img/pacman/LEFT.png';
     this.name = 'pacman';
-    this.tick = 0;
 }
 
      
@@ -128,21 +127,5 @@ onKeyDown(e) {
 
     }
 } 
-    
-
-
-
-  
-  // move() {
-  //   this.tick++;
-
-  //   if (this.tick >= 20) {
-  //     this.x += this.vx;
-  //     this.y += this.vy;
-  //     this.tick = 0;
-
-  //   }
-   
-  // }
 
 }
