@@ -113,16 +113,7 @@ class Game {
         if (canvas) {
             canvas.style.display = 'block';
         }
-        // } else {
-        //     // Si el canvas no existe, crearlo
-        //     canvas = document.createElement('canvas');
-        //     canvas.id = 'pacmanCanvas';
-        //     canvas.width = 560;
-        //     canvas.height = 620;
-        //     document.body.appendChild(canvas);
-        //     this.ctx = canvas.getContext('2d');
-        // }
-    
+        
         // Iniciar el juego
         const scoreContainer = document.getElementById('scoreContainer');
         if(!scoreContainer) this.createScore();
@@ -141,7 +132,7 @@ class Game {
         // Primero, ocultar la pantalla de carga si todavía está visible
         const loadingScreen = document.getElementById('loadingScreen');
         if (loadingScreen && loadingScreen.style.display !== 'none') {
-            loadingScreen.style.display = 'none';
+            document.body.removeChild(loadingScreen);
         }
     
         // Verificar si ya existe un modal previo para evitar duplicados
@@ -220,14 +211,7 @@ class Game {
             }
         };
     }
-    
-    
-    
 
-    // showControls() {
-    //     alert('Use arrow keys to move Pac-Man. Avoid ghosts and collect all pellets!');
-    // }
-   
     initWalls(wall_position) {
         this.walls = Wall.createWalls(this.ctx, wall_position);
         
@@ -281,17 +265,6 @@ class Game {
         this.powerPellets = [];
         this.walls = [];
     
-        // Limpiar canvas y recrearlo
-        // let canvas = document.getElementById('pacmanCanvas');
-        // if (!canvas) {
-        //     canvas = document.createElement('canvas');
-        //     canvas.id = 'pacmanCanvas';
-        //     canvas.width = 560; // Ajusta el tamaño según el juego
-        //     canvas.height = 620;
-        //     document.body.appendChild(canvas);
-        // }
-        // this.ctx = canvas.getContext('2d');
-    
         // Iniciar el juego
         this.startGame(this.playerName);
     }
@@ -300,7 +273,13 @@ class Game {
         if (this.powerPellets.length === 0 && this.pellets.length === 0) {
             this.level++;
             this.pacman = new Pacman(this.ctx);
-            this.startGame(this.playerName);
+            // Initialize the objects array 
+            this.pellets = []; 
+            this.powerPellets = [];
+            this.walls = [];
+            this.ghosts = [];
+            this.lives = 3;
+            this.start();
         }
     }   
     
@@ -675,34 +654,77 @@ class Game {
                 break;
         }
     }  
-        
     handleCollisionWithGhost(collideGhost) {
-
-        if(!this.powerPelletActive) {
-              // Reset the Pac-Man's position
-        this.pacman = new Pacman(this.ctx);
-
+        if (!this.powerPelletActive) {
+            // Resetear la posición de Pac-Man
+            this.pacman = new Pacman(this.ctx);
+            this.looseLive(); // Pac-Man pierde una vida si no está el PowerPellet activo
+        } else {
+            // Si el PowerPellet está activo, el fantasma es comido
+            collideGhost.eaten = true;
+            this.score += 100;
+    
+            // Reiniciar las propiedades del fantasma después de 5 segundos
+            setTimeout(() => {
+                this.resetGhostProperties(collideGhost);
+            }, 5000); // Esperar 5 segundos antes de que el fantasma reaparezca
         }
-
-        // Reset the position of the ghost involved in the collision
-        this.ghosts = this.ghosts.map(ghost => {
-            if (ghost === collideGhost) {
-                switch (ghost.name) {
-                    case 'blinky':
-                        return new Blinky(this.ctx, this.level);
-                    case 'pinky':
-                        return new Pinky(this.ctx, this.level);
-                    case 'inky':
-                        return new Inky(this.ctx, this.level);
-                    case 'clyde':
-                        return new Clyde(this.ctx, this.level);
-                    default:
-                        return ghost;
-                }
-            }
-            return ghost; 
-        });
     }
+    
+    // Método para reiniciar las propiedades del fantasma
+    resetGhostProperties(ghost) {
+        switch (ghost.name) {
+            case 'blinky':
+                ghost.x = 11 * 20; // Cambia estas posiciones según sea necesario
+                ghost.y = 14 * 20;
+                break;
+            case 'pinky':
+                ghost.x = 11 * 20;
+                ghost.y = 15 * 20;
+                break;
+            case 'inky':
+                ghost.x = 12 * 20;
+                ghost.y = 15 * 20;
+                break;
+            case 'clyde':
+                ghost.x = 11 * 20;
+                ghost.y = 16 * 20;
+                break;
+        }
+        ghost.vx = 1; // Reiniciar la velocidad
+        ghost.vy = 0; // Reiniciar la velocidad
+        ghost.currentDirection = 'UP'; // Reiniciar la dirección
+        ghost.eaten = false; // El fantasma ya no está comido
+    }
+    
+        
+    // handleCollisionWithGhost(collideGhost) {
+
+    //     if(!this.powerPelletActive) {
+    //           // Reset the Pac-Man's position
+    //     this.pacman = new Pacman(this.ctx);
+
+    //     }
+
+    //     // Reset the position of the ghost involved in the collision
+    //     this.ghosts = this.ghosts.map(ghost => {
+    //         if (ghost === collideGhost) {
+    //             switch (ghost.name) {
+    //                 case 'blinky':
+    //                     return new Blinky(this.ctx, this.level);
+    //                 case 'pinky':
+    //                     return new Pinky(this.ctx, this.level);
+    //                 case 'inky':
+    //                     return new Inky(this.ctx, this.level);
+    //                 case 'clyde':
+    //                     return new Clyde(this.ctx, this.level);
+    //                 default:
+    //                     return ghost;
+    //             }
+    //         }
+    //         return ghost; 
+    //     });
+    // }
 
     initializeLives() {
         // Create the lives container if it doesn't exist
