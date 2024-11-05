@@ -569,7 +569,6 @@ class Game {
                     if (object.objectType === 'ghost') {
                         this.handleCollisionWithGhost(object);
                         if(this.powerPelletActive){
-                            object.releaseTime += 2000;
                             this.score += 100;
                         } else {this.looseLive()};
                     }    
