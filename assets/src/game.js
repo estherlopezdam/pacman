@@ -382,6 +382,83 @@ class Game {
         localStorage.setItem('rankings', JSON.stringify(this.rankings));
     }
 
+    // showRanking() {
+
+    //     const canvas = document.getElementById('pacmanCanvas');
+    //     if (canvas) {
+    //         canvas.style.display = 'none';
+    //     }
+    
+    //     const scoreContainer = document.getElementById('scoreContainer');
+    //     if (scoreContainer) {
+    //         scoreContainer.style.display = 'none';
+    //     }
+    //     const gameOverContainer = document.createElement('div');
+    //     gameOverContainer.classList.add('game-over-container');
+    //     gameOverContainer.style.textAlign = 'center';
+    
+    //     // Game Over Title
+    //     const gameOverTitle = document.createElement('h1');
+    //     gameOverTitle.classList.add('game-over-title');
+    //     gameOverTitle.textContent = 'Game Over';
+    //     gameOverContainer.appendChild(gameOverTitle);
+    
+    //     // Ranking Title
+    //     const rankingTitle = document.createElement('h2');
+    //     rankingTitle.classList.add('ranking-title');
+    //     rankingTitle.textContent = 'Ranking Top Five';
+    //     gameOverContainer.appendChild(rankingTitle);
+    
+    //     // Ranking list
+    //     const rankingList = document.createElement('ul');
+    //     rankingList.classList.add('ranking-list');
+    
+    //     // Get the ranking from localStorage and display it
+    //     this.rankings = JSON.parse(localStorage.getItem('rankings')) || [];
+
+    //      // Supposing that the scores are stored in `this.highScores`
+    //      this.rankings
+    //      .sort((a, b) => b.score - a.score)
+    //      .slice(0, 5)
+    //      .forEach((score, index) => {
+    //        const listItem = document.createElement('li');
+           
+    //        // Position
+    //        const position = document.createElement('span');
+    //        position.classList.add('position');
+    //        position.textContent = `#${index + 1}`;
+    //        listItem.appendChild(position);
+           
+    //        // Player's Name
+    //        const name = document.createElement('span');
+    //        name.classList.add('name');
+    //        name.textContent = score.name;
+    //        listItem.appendChild(name);
+           
+    //        // Player's Score
+    //        const scoreElement = document.createElement('span');
+    //        scoreElement.classList.add('score');
+    //        scoreElement.textContent = score.score;
+    //        listItem.appendChild(scoreElement);
+   
+    //        rankingList.appendChild(listItem);
+    //      });
+   
+    //        gameOverContainer.appendChild(rankingList);
+       
+    //        // Retry button
+    //        const retryButton = document.createElement('button');
+    //        retryButton.classList.add('retry-button');
+    //        retryButton.textContent = 'Reintentar';
+    //        retryButton.addEventListener('click', () => {
+    //        this.restartGame();
+    //        });
+    //        gameOverContainer.appendChild(retryButton);
+    //        const flexContainer = document.getElementById("title-container");
+       
+    //        flexContainer.appendChild(gameOverContainer);
+
+    // }
     showRanking() {
 
         const canvas = document.getElementById('pacmanCanvas');
@@ -392,6 +469,10 @@ class Game {
         const scoreContainer = document.getElementById('scoreContainer');
         if (scoreContainer) {
             scoreContainer.style.display = 'none';
+        }
+        const gameOverContainer2 = document.querySelector('.game-over-container');
+        if (gameOverContainer2) {
+            gameOverContainer2.remove(); // Eliminar la pantalla de game over del DOM
         }
         const gameOverContainer = document.createElement('div');
         gameOverContainer.classList.add('game-over-container');
